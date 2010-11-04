@@ -6,7 +6,7 @@ GraphObjects is intended to work on Mac OS X 10.6+ and iOS 4.2+. The underlying 
 
 __Building__
 
-GraphObjects requires a clang 2.0 toolchain in order to build. that mean that no currently released build of Xcode can build it out of box. In order to build it you either need to build a a custome MacOS X 10.6 or iOS 4.2 SDK a copy of clang pulled from their repository, hack up your system compilers, or use unreleased developer tool previews. While GraphObjects has occasionally been built for iOS, it currently is being primarily brought up on Mac OS X x86.
+GraphObjects requires a clang 2.0 toolchain in order to build. that mean that no currently released build of Xcode can build it out of box. In order to build it you either need to build a a custom MacOS X 10.6 or iOS 4.2 SDK using a copy of clang pulled from their repository, hack up your system compilers, or use unreleased developer tool previews. While GraphObjects has occasionally been built for iOS, it currently is being primarily brought up on Mac OS X x86.
     
 __Usage__
 
