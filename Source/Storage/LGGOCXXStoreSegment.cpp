@@ -47,19 +47,19 @@ LGGOCXXStoreSegment::LGGOCXXStoreSegment(LGGOCXXSharedMemoryDescriptor D) : desc
   pointerCount = LGGOSwapLittleToHost64(*((uint64_t *)&segmentData[16]));
   hashCount = LGGOSwapLittleToHost64(*((uint64_t *)&segmentData[24]));
   pointerPointerTableOffset = 4*sizeof(uint64_t);
-  pointerHashTableOffset = pointerPointerTableOffset + (pointerCount * sizeof(LGGOCXXAddress));
+  pointerHashTableOffset = pointerPointerTableOffset + (pointerCount * HASHTABLE_RECORD_SIZE);
   hashHashTableOffset = pointerHashTableOffset + (pointerCount * CC_SHA224_DIGEST_LENGTH);
   hashDataTableOffset = hashHashTableOffset + (hashCount*HASHTABLE_RECORD_SIZE);
 }
 
 
 
-void LGGOCXXStoreSegment::setDescriptorForAddress(const LGGOCXXSharedMemoryDescriptor &objectt, LGGOCXXAddress address) {
+void LGGOCXXStoreSegment::setDescriptorForAddress(const LGGOCXXSharedMemoryDescriptor &objectt, uint64_t address) {
   //Make this something real someday
   throw;
 }
 
-LGGOCXXSharedMemoryDescriptor LGGOCXXStoreSegment::getDescriptorForAddress (LGGOCXXAddress address) {
+LGGOCXXSharedMemoryDescriptor LGGOCXXStoreSegment::getDescriptorForAddress (uint64_t address) {
   LGGOCXXSharedMemoryDescriptor retval = LGGOCXXSharedMemoryDescriptor((LGGOCXXMemoryDescriptor *)NULL);
   uint8_t *segmentData = (uint8_t *)descriptor->getData();
   
@@ -70,7 +70,7 @@ LGGOCXXSharedMemoryDescriptor LGGOCXXStoreSegment::getDescriptorForAddress (LGGO
   uint64_t i;
   
   for (i = 0; i < pointerCount; ++i) {
-    if (LGGOCXXAddress(pointerTablePointers[i]) == address) {
+    if (pointerTablePointers[i] == address) {
       break;
     }
   }
@@ -100,12 +100,12 @@ LGGOCXXSharedMemoryDescriptor LGGOCXXStoreSegment::getDescriptorForAddress (LGGO
   return retval;
 }
 
-
-void LGGOCXXWritableStoreSegment::setDescriptorForAddress(const LGGOCXXSharedMemoryDescriptor &object, LGGOCXXAddress address) {
+#if 0
+void LGGOCXXWritableStoreSegment::setDescriptorForAddress(const LGGOCXXSharedMemoryDescriptor &object, uint64_t address) {
   memoryObjects[address] = object;
 }
 
-LGGOCXXSharedMemoryDescriptor LGGOCXXWritableStoreSegment::getDescriptorForAddress (LGGOCXXAddress address) {
+LGGOCXXSharedMemoryDescriptor LGGOCXXWritableStoreSegment::getDescriptorForAddress (uint64_t address) {
   LGGOCXXSharedMemoryDescriptor retval;
   std::map<LGGOCXXAddress,LGGOCXXSharedMemoryDescriptor>::iterator i = memoryObjects.find(address);
   
@@ -126,7 +126,7 @@ LGGOCXXSharedMemoryDescriptor LGGOCXXWritableStoreSegment::serializeToMemory(voi
   uint64_t k;
 
   uint64_t pointerCount = memoryObjects.size();
-  uint64_t pointerTablePointersSize = sizeof(LGGOCXXAddress)*pointerCount;
+  uint64_t pointerTablePointersSize = HASHTABLE_RECORD_SIZE*pointerCount;
   uint64_t *pointerTablePointers = (uint64_t *)malloc(pointerTablePointersSize);
   unsigned char *pointerTableHashes = (unsigned char *)malloc(CC_SHA224_DIGEST_LENGTH*sizeof(unsigned char)*pointerCount);
 
@@ -211,8 +211,8 @@ LGGOCXXSharedMemoryDescriptor LGGOCXXWritableStoreSegment::serializeToMemory(voi
   
   currentOffset = 32;
   
-  bcopy(pointerTablePointers, &segmentData[currentOffset], (sizeof(LGGOCXXAddress)*pointerCount));
-  currentOffset = currentOffset + (sizeof(LGGOCXXAddress)*pointerCount);
+  bcopy(pointerTablePointers, &segmentData[currentOffset], HASHTABLE_RECORD_SIZE*pointerCount);
+  currentOffset = currentOffset + (HASHTABLE_RECORD_SIZE*pointerCount);
   free(pointerTablePointers);
 
   
@@ -229,3 +229,4 @@ LGGOCXXSharedMemoryDescriptor LGGOCXXWritableStoreSegment::serializeToMemory(voi
   
   return LGGOCXXSharedMemoryDescriptor(new LGGOCXXMemoryDescriptor(segmentData, totalSize, false, true));
 }
+#endif

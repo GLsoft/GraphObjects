@@ -34,7 +34,9 @@ typedef std::tr1::weak_ptr<LGGOCXXStoreContext> LGGOCXXWeakStoreContext;
 #define LGGOCXXSTORECONTEXT_H
 
 #include <vector>
+#include <map>
 
+#include "LGGOCXXMemoryDescriptor.h"
 #include "LGGOCXXStore.h"
 #include "LGGOCXXStoreSegment.h"
 #include "LGGOCXXType.h"
@@ -45,24 +47,20 @@ class LGGOCXXWritableStoreSegment;
 class LGGOCXXStoreContext : public std::tr1::enable_shared_from_this<LGGOCXXStoreContext> {
 private:
   LGGOCXXSharedStore store;
-  LGGOCXXWritableStoreSegment *writableSegment;
+//  LGGOCXXWritableStoreSegment *writableSegment;
   std::vector<LGGOCXXSharedStoreSegment> segments;
   uint64_t nextAddressValue;
    void (*nativeReleaseFunc)(void *);
    void (*nativeRetainFunc)(void *);
   
+  std::map<uint64_t,LGGOCXXWeakAddress> addresses;
   //FIXME this should be weak, but without native types that can bump shared_ptrs it needs to be strong for now
-  std::map<LGGOCXXAddress,LGGOCXXSharedType> resolvedObjects;
 public:
   explicit LGGOCXXStoreContext(const LGGOCXXSharedStore &S);
-  LGGOCXXAddress getNextFreeAddress (void);
+  uint64_t getNextFreeAddress (void);
   void writeSegment (void);
   void commit (void);
-  void setResolvedObjectForAddress(const LGGOCXXSharedType &object, LGGOCXXAddress address);
-  LGGOCXXSharedType resolvedObjectForAddress(LGGOCXXAddress address);
-  
-  LGGOCXXSharedType getObjectForAddress (LGGOCXXAddress address);
-  void setObjectForAddress(const LGGOCXXSharedType &object, LGGOCXXAddress address);  
+   
   LGGOCXXSharedType rootObject(void);
   void setRootObject(const LGGOCXXSharedType &object);
   
@@ -72,6 +70,11 @@ public:
   void nativeObjectRetain(void *nativeObject);
   void nativeObjectRelease(void *nativeObject);
   
+  LGGOCXXSharedAddress getAddress (uint64_t address);
+  LGGOCXXSharedMemoryDescriptor getDescriptorForAddress (uint64_t address);
+  
+  void setAddressForAddressValue(const LGGOCXXWeakAddress& address, uint64_t addressValue);
+  LGGOCXXSharedAddress getAddressForAddressValue(uint64_t addressValue);
 };
 
 #endif

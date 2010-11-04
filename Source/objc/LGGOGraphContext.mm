@@ -30,9 +30,9 @@
 #import "LGGONumber.h"
 #import "LGGOMutableArray.h"
 
-@protocol LGGOCXXSharedType
+@protocol LGGOCXXSharedAddress
 
-@property (nonatomic, readonly) LGGOCXXSharedType sharedType;
+@property (nonatomic, readonly) LGGOCXXSharedAddress address;
 
 @end
 
@@ -65,51 +65,54 @@
 // This function returns a graph object from a normal object. It will grab the underlying
 // graph object, or make one (without an attached native object) if necessary.
 
-- (id) transmuteToNativeObject:(LGGOCXXSharedType)graphObject {
-  id retval = (id)graphObject->getNativeObject();
+- (id) transmuteToNativeObject:(LGGOCXXSharedAddress)address {
+  id retval = (id)(*address)->getNativeObject();
   
   if (!retval) {
-    std::tr1::shared_ptr<LGGOCXXHackArray> lggoArray = std::tr1::dynamic_pointer_cast<LGGOCXXHackArray>(graphObject);
+    std::tr1::shared_ptr<LGGOCXXHackArray> lggoArray = std::tr1::dynamic_pointer_cast<LGGOCXXHackArray>(*address);
     if (lggoArray.get()) {
-      return [[[LGGOMutableArray alloc] initWithGraphObject:graphObject inContext:self] autorelease];
+      return [[[LGGOMutableArray alloc] initWithGraphObject:address inContext:self] autorelease];
     }
     
-    std::tr1::shared_ptr<LGGOCXXString> lggoString = std::tr1::dynamic_pointer_cast<LGGOCXXString>(graphObject);
+    std::tr1::shared_ptr<LGGOCXXString> lggoString = std::tr1::dynamic_pointer_cast<LGGOCXXString>(*address);
     if (lggoString.get()) {
-      return [[[LGGOString alloc] initWithGraphObject:graphObject inContext:self] autorelease];
+      return [[[LGGOString alloc] initWithGraphObject:address inContext:self] autorelease];
     }
     
-    std::tr1::shared_ptr<LGGOCXXNumber> lggoNumber = std::tr1::dynamic_pointer_cast<LGGOCXXNumber>(graphObject);
+    std::tr1::shared_ptr<LGGOCXXNumber> lggoNumber = std::tr1::dynamic_pointer_cast<LGGOCXXNumber>(*address);
     if (lggoNumber.get()) {
-      return [[[LGGONumber alloc] initWithGraphObject:graphObject inContext:self] autorelease];
+      return [[[LGGONumber alloc] initWithGraphObject:address inContext:self] autorelease];
     }
-
-
   }
   
   return retval;
 }
 
-- (LGGOCXXSharedType) transmuteToGraphObject:(id)object {
-  LGGOCXXSharedType retval;
+- (LGGOCXXSharedAddress) transmuteToGraphObject:(id)object {
+  LGGOCXXSharedAddress retval;
   
-  if ([object respondsToSelector:@selector(LGGOCXXSharedType)]) {
-    id<LGGOCXXSharedType> lggoObject = object;
-    retval = [lggoObject sharedType];
+  if ([object respondsToSelector:@selector(address)]) {
+    id<LGGOCXXSharedAddress> lggoObject = object;
+    retval = [lggoObject address];
+    retval->setNativeObject(object);
   } else if ([object isKindOfClass:[NSString class]]) {
     NSString *string = object;
-    retval = LGGOCXXSharedType(new LGGOCXXString(CXXContext, string.UTF8String));
+    retval = LGGOCXXSharedAddress(self.CXXContext, LGGOCXXSharedType(new LGGOCXXString(string.UTF8String)));
+    retval->setNativeObject(object);
   } else if ([object isKindOfClass:[NSNumber class]]) {
     //FIXME this needs improvement for floats
     NSNumber *number = object;
-    retval = LGGOCXXSharedType(new LGGOCXXNumber(CXXContext, number.longLongValue));
+    LGGOCXXSharedAddress temp(self.CXXContext, LGGOCXXSharedType(new LGGOCXXNumber(number.longLongValue)));
+    retval = temp;
+    retval->setNativeObject(object);
   } else if ([object isKindOfClass:[NSArray class]]) {
     NSArray *array = object;
-    retval = LGGOCXXSharedType(new LGGOCXXHackArray(CXXContext));
-    std::tr1::shared_ptr<LGGOCXXHackArray> lggoArray = std::tr1::dynamic_pointer_cast<LGGOCXXHackArray>(retval);
+    retval = LGGOCXXSharedAddress(self.CXXContext, LGGOCXXSharedType(new LGGOCXXHackArray()));
+    std::tr1::shared_ptr<LGGOCXXHackArray> lggoArray = std::tr1::dynamic_pointer_cast<LGGOCXXHackArray>(*retval);
     [array enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
       lggoArray->addObject([self transmuteToGraphObject:obj]);
     }];
+    retval->setNativeObject(object);
   } else {
     assert(0);
   }

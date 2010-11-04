@@ -22,6 +22,7 @@
 #import <Foundation/Foundation.h>
 
 #if defined __cplusplus
+#include "LGGOCXXAddress.h"
 #include "LGGOCXXType.h"
 #endif
 
@@ -29,6 +30,6 @@
 
 - (id)initInContext:(LGGOGraphContext *)context_;
 #if defined __cplusplus
-- (id)initWithGraphObject:(const LGGOCXXSharedType &)graphObject inContext:(LGGOGraphContext *)context_;
+- (id)initWithGraphObject:(const LGGOCXXSharedAddress &)graphObject inContext:(LGGOGraphContext *)context_;
 #endif
 @end

@@ -36,6 +36,7 @@
 
 @implementation LGGOArrayTests
 
+#if 0
 - (void) testCreation {
   LGGOGraph *graph = [[LGGOGraph alloc] initWithURL:[NSURL URLWithString:@"file:///tmp/"]];
   LGGOGraphContext *context = [graph newContext];
@@ -45,12 +46,9 @@
   for(NSUInteger i = 0; i < ARRAY_COUNT; i++) {
     [array insertObject:[NSNumber numberWithUnsignedInteger:i] atIndex:0];
     [graphArray insertObject:[NSNumber numberWithUnsignedInteger:i] atIndex:0];
-    STAssertEqualObjects(array, graphArray, nil);
   }
 
   STAssertEquals((NSUInteger)ARRAY_COUNT, graphArray.count, nil);
-  
-//  [self validateArrayTree:graphArray.rootNode];
   
 	[graphArray release];
   [graph release];
@@ -109,6 +107,7 @@
 	[graphArray release];
 	[graph release];
 }
-#endif
 
+#endif
+#endif
 @end

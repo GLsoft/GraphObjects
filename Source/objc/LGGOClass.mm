@@ -27,40 +27,44 @@
 #import "LGGOClass.h"
 
 @interface LGGOClass () {
-  LGGOCXXSharedType sharedType;
+  LGGOCXXSharedAddress address;
   LGGOGraphContext *graphContext;
 }
+
+@property (nonatomic, readonly) LGGOCXXSharedAddress address;
 
 @end 
 
 @implementation LGGOClass
 
-- (id) initWithName:(NSString *)name_ inContext:(LGGOGraphContext *)context_ {
+- (id)initWithGraphObject:(const LGGOCXXSharedAddress &)graphObject inContext:(LGGOGraphContext *)context_ {
   self = [super init];
-	
+  
   if (self) {
-    sharedType = LGGOCXXSharedType(new LGGOCXXClass(context_.CXXContext, std::string(name_.UTF8String)));
+    address = graphObject;
     graphContext = [context_ retain];
-    sharedType->setNativeObject(self);
+    address->setNativeObject(self);
   }
   
   return self;
 }
 
 
-- (id)initWithGraphObject:(const LGGOCXXSharedType &)graphObject inContext:(LGGOGraphContext *)context_ {
-  self = [super init];
+- (id) initWithName:(NSString *)name_ inContext:(LGGOGraphContext *)context_ {
+	self = [super init];
   
   if (self) {
-    sharedType = graphObject;
+    LGGOCXXSharedType type(new LGGOCXXClass(std::string(name_.UTF8String)));
+    address = LGGOCXXSharedAddress(context_.CXXContext, type);
     graphContext = [context_ retain];
-    sharedType->setNativeObject(self);
+    address->setNativeObject(self);
   }
-  
-  return self;
+	
+	return self;
 }
 
 - (void) dealloc {
+  address->setNativeObject(NULL);
   [graphContext release];
   
   [super dealloc];

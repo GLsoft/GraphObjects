@@ -36,13 +36,12 @@ typedef std::tr1::tuple<LGGOCXXRelationEncodingType, LGGOCXXRelationSemanticsTyp
 
 class LGGOCXXClass : public LGGOCXXType {
 private:
-  LGGOCXXAddress address;
   std::string name;
   std::map<std::string, LGGOCXXScalarEncodingType> properties;
   std::map<std::string, LGGOCXXRelationTuple> relations;
   bool dirty:1;
 public: 
-  LGGOCXXClass(LGGOCXXSharedStoreContext C, std::string N);
+  explicit LGGOCXXClass(std::string N);
   void addProperty(std::string name, LGGOCXXScalarEncodingType type);
   void addRelation(std::string name, LGGOCXXRelationEncodingType type, LGGOCXXRelationSemanticsType semantics);
   
@@ -52,10 +51,9 @@ public:
   LGGOCXXRelationEncodingType getRelationType(std::string name);
   LGGOCXXRelationSemanticsType getRelationSemantics(std::string name);
   uint32_t getRelationOffset(std::string name);
-  
-  virtual LGGOCXXAddress getAddress(void);
-  virtual LGGOCXXSharedMemoryDescriptor getSerializedData (void);
 
+  virtual uint64_t getTagValue (void);
+  virtual LGGOCXXSharedMemoryDescriptor getSerializedData (void);
   virtual bool isDirty(void);
   virtual bool isDusty(void);
 };

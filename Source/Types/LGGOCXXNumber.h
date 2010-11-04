@@ -42,12 +42,12 @@ typedef enum {
 
 class LGGOCXXNumber : public LGGOCXXType {
 private:
+  uint64_t rawValue;
   LGGOCXXSharedMemoryDescriptor descriptor;
-  LGGOCXXAddress address;
   LGGOCXXScalarEncodingType type;
   bool dirty:1;
 public:
-  explicit LGGOCXXNumber(LGGOCXXSharedStoreContext C, int64_t N);
+  explicit LGGOCXXNumber(int64_t N);
   
   LGGOCXXScalarEncodingType getType(void);
   int64_t signedValue (void);
@@ -55,7 +55,7 @@ public:
   float floatValue(void);
   double doubleValue(void);
 
-  virtual LGGOCXXAddress getAddress(void);
+  virtual uint64_t getTagValue (void);
   virtual LGGOCXXSharedMemoryDescriptor getSerializedData (void);
   virtual bool isDirty(void);
   virtual bool isDusty(void);

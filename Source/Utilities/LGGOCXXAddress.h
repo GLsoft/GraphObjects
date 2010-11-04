@@ -20,13 +20,16 @@
  
  */
 
-// FIXME
-// In order to avoid lookups and solve cycles this will need to become our core custom smart pointer class
+class LGGOCXXSharedAddress;
+class LGGOCXXWeakAddress;
 
 #include "LGGOCXXType.h"
+#include "LGGOCXXStoreContext.h"
 
 #ifndef LGGOADDRESS_H
 #define LGGOADDRESS_H
+
+#define LGGOCXXADDRESS_SERIALIZED_SIZE (8)
 
 typedef enum {
   kLGGOAddressNativeType = 0,
@@ -45,29 +48,89 @@ typedef enum {
 class LGGOCXXAddress {
 private:
   uint64_t address;
+  LGGOCXXSharedStoreContext context;
+  LGGOCXXSharedType type;
+  uint32_t strongRefCount;
+  uint32_t weakRefCount;
 public:
-  LGGOCXXAddress(const LGGOCXXAddress& A) : address(A.address) { }
-  explicit LGGOCXXAddress(uint64_t A = 0) : address(A) {}
-  const uint64_t getAddressValue (void) { return address; }
+  explicit LGGOCXXAddress(const LGGOCXXSharedStoreContext& C, const LGGOCXXSharedType &T, uint64_t A);
+  explicit LGGOCXXAddress(const LGGOCXXSharedStoreContext& C, const LGGOCXXSharedType &T);
+  const uint64_t getAddressValue (void);
   
-  const LGGOSimpleType getType (void) const { return static_cast<LGGOSimpleType>(address | (uint64_t)0x00ff); }
-  const bool isNative (void) const { return ((address | (uint64_t)0x00ff) == kLGGOAddressNativeType); }
-  const bool isValid (void) const { return address != 0; }
+  const LGGOSimpleType getType (void) const;
+  const bool isNative (void) const;
+  const bool isValid (void) const;
   
+  uint64_t getConcreteAddressValue (void) const;
   
-  uint64_t getConcreteAddressValue (void) const { return address; }
+  void incrementStrongCount (void);
+  void decrementStrongCount (void);
   
-  bool operator== (const LGGOCXXAddress& A) {
-    return (address == A.address);
+  void incrementWeakCount (void);
+  void decrementWeakCount (void);
+  
+  const LGGOCXXSharedStoreContext& getContext(void);
+
+  bool operator== (const LGGOCXXAddress& A);
+  bool operator> (const LGGOCXXAddress& b) const;
+  bool operator< (const LGGOCXXAddress& b) const;
+  
+  LGGOCXXSharedType getType (void) {
+    return type;
   }
   
-  bool operator> (const LGGOCXXAddress& b) const {
-    return address > b.address;
+  void setType (const LGGOCXXSharedType& T) {
+    type = T;
   }
   
-  bool operator< (const LGGOCXXAddress& b) const {
-    return address < b.address;
-  }
+  friend class LGGOCXXSharedAddress;
+  friend class LGGOCXXWeakAddress;
+};
+
+class LGGOCXXSharedAddress {
+private:
+  LGGOCXXAddress *address;
+public:
+  explicit LGGOCXXSharedAddress(const LGGOCXXWeakAddress& A);
+  LGGOCXXSharedAddress(const LGGOCXXSharedAddress& A);
+  LGGOCXXSharedAddress(const LGGOCXXSharedStoreContext& C, uint64_t A);
+  LGGOCXXSharedAddress(const LGGOCXXSharedStoreContext& C, const LGGOCXXSharedType &T);
+  LGGOCXXSharedAddress(void);
+  ~LGGOCXXSharedAddress(void);
+  
+  const LGGOCXXSharedStoreContext& getContext(void);
+  uint64_t getAddressValue(void);
+  
+  LGGOCXXSharedType getType (void);
+  
+  void setType (const LGGOCXXSharedType& T);
+  bool isValid (void);
+  
+  LGGOCXXSharedType operator* (void) const;
+  LGGOCXXSharedType operator-> (void) const;
+  
+  LGGOCXXSharedAddress& operator= (const LGGOCXXSharedAddress& A);
+  
+  friend class LGGOCXXWeakAddress;
+};
+
+class LGGOCXXWeakAddress {
+private:
+  LGGOCXXAddress *address;
+public:
+  LGGOCXXWeakAddress(void);
+  explicit LGGOCXXWeakAddress(const LGGOCXXSharedAddress& A);
+  explicit LGGOCXXWeakAddress(LGGOCXXAddress *A);
+  LGGOCXXWeakAddress(const LGGOCXXWeakAddress&A);
+  ~LGGOCXXWeakAddress(void);
+    
+  const LGGOCXXSharedStoreContext& getContext(void);
+  uint64_t getAddressValue(void);
+  bool isValid (void);
+  
+  LGGOCXXWeakAddress& operator= (const LGGOCXXWeakAddress& A);
+  
+  friend class LGGOCXXSharedAddress;
 };
 
 #endif

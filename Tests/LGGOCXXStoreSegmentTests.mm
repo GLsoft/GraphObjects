@@ -26,11 +26,13 @@
 
 @implementation LGGOCXXStoreSegmentTests
 
+#if 0
 - (void) testWritableSegmentCreation {
   LGGOCXXWritableStoreSegment *segment = new LGGOCXXWritableStoreSegment;
   STAssertTrue(segment != nil, nil);
   delete segment;
 }
+
 
 - (void) testWritableSegmentStorage {
   LGGOCXXWritableStoreSegment *segment = new LGGOCXXWritableStoreSegment;
@@ -90,5 +92,6 @@
     free(data);
   }
 }
+#endif
 
 @end

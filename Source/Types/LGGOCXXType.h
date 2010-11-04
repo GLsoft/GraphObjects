@@ -68,17 +68,21 @@ typedef enum {
 
 virtual class LGGOCXXType : public std::tr1::enable_shared_from_this<LGGOCXXType> {
 private:
-  LGGOCXXSharedStoreContext context;
+  LGGOCXXWeakAddress address;
   void *clientData;
 public:
-  LGGOCXXType(const LGGOCXXSharedStoreContext& C);
-  LGGOCXXSharedStoreContext getContext(void);
+  explicit LGGOCXXType(void);
   
+  LGGOCXXWeakAddress getAddress(void);
+  void setAddress (const LGGOCXXWeakAddress &A);
+  
+  const LGGOCXXSharedStoreContext& getContext(void);
+
   void *getNativeObject(void);
   void setNativeObject(void *D);
   
-  virtual LGGOCXXAddress getAddress(void) = 0;
   virtual LGGOCXXSharedMemoryDescriptor getSerializedData (void) = 0;
+  virtual uint64_t getTagValue (void) = 0;
   virtual bool isDirty(void) = 0;
   virtual bool isDusty(void) = 0;
 };

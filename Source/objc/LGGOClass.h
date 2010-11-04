@@ -28,6 +28,5 @@
 @interface LGGOClass : NSObject
 
 - (id) initWithName:(NSString *)name_ inContext:(LGGOGraphContext *)context_;
-- (id)initWithGraphObject:(const LGGOCXXSharedType &)graphObject inContext:(LGGOGraphContext *)context_ ;
-
+- (id)initWithGraphObject:(const LGGOCXXSharedAddress &)graphObject inContext:(LGGOGraphContext *)context_;
 @end

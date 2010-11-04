@@ -23,19 +23,8 @@
 
 #include "LGGOCXXClass.h"
 
-LGGOCXXClass::LGGOCXXClass(LGGOCXXSharedStoreContext C, std::string N) : LGGOCXXType(C), name(N), dirty(true) {
+LGGOCXXClass::LGGOCXXClass(std::string N) : LGGOCXXType(), name(N), dirty(true) {
 
-}
-
-LGGOCXXAddress LGGOCXXClass::getAddress (void) {
-  if (address.isValid()) {
-    address = getContext()->getNextFreeAddress();
-    //HACK
-    //Remove this once we have native LGGOAddresses
-    getContext()->setResolvedObjectForAddress(shared_from_this(), address);
-  }
-  
-  return address;
 }
 
 void LGGOCXXClass::addProperty(std::string name, LGGOCXXScalarEncodingType type) {
@@ -81,7 +70,7 @@ uint32_t LGGOCXXClass::getPropertyOffset(std::string name) {
   uint8_t tSize = ::typeSize(type);
 
   //Properties come after relations
-  uint32_t retval = sizeof(LGGOCXXAddress)*relations.size();
+  uint32_t retval = LGGOCXXADDRESS_SERIALIZED_SIZE*relations.size();
   
   std::map<std::string, LGGOCXXScalarEncodingType>::iterator i;
     
@@ -129,6 +118,9 @@ uint32_t LGGOCXXClass::getRelationOffset(std::string name) {
   return retval;
 }
 
+uint64_t LGGOCXXClass::getTagValue (void) {
+  return 0;
+}
 
 LGGOCXXSharedMemoryDescriptor LGGOCXXClass::getSerializedData (void) {
   return NULL_DESCRIPTOR;

@@ -28,54 +28,78 @@
 
 
 @interface LGGOString () {
-  LGGOCXXSharedType sharedType;
+  LGGOCXXSharedAddress address;
   LGGOGraphContext *graphContext;
 }
 
-@property LGGOCXXSharedType sharedType;
+@property LGGOCXXSharedAddress address;
 
 @end
 
 @implementation LGGOString
 
-- (id) initWithString:(NSString *)string_ inContext:(LGGOGraphContext *)context_ {
-  self = [super init];
-	
+- (id)initWithGraphObject:(const LGGOCXXSharedAddress &)graphObject inContext:(LGGOGraphContext *)context_ {
+	self = [super init];
+  id retval;
+  
   if (self) {
-    sharedType = LGGOCXXSharedType(new LGGOCXXString(context_.CXXContext, std::string(string_.UTF8String)));
-    graphContext = [context_ retain];
-    sharedType->setNativeObject(self);
+    address = graphObject;
+    
+    id existingObject = (id)address->getNativeObject();
+    
+    if (existingObject) {
+      [self release];
+      retval = [existingObject retain];
+    } else {
+      graphContext = [context_ retain];
+      address->setNativeObject(self);
+    }
   }
   
-  return self;
+  return retval;
 }
 
-- (id)initWithGraphObject:(const LGGOCXXSharedType &)graphObject inContext:(LGGOGraphContext *)context_ {
-  self = [super init];
+- (id)initWithString:(NSString *)string_ inContext:(LGGOGraphContext *)context_ {
+	self = [super init];
+  id retval;
   
   if (self) {
-    sharedType = graphObject;
-    graphContext = [context_ retain];
-    sharedType->setNativeObject(self);
+    LGGOCXXSharedType type(new LGGOCXXString(std::string(string_.UTF8String)));
+    address = LGGOCXXSharedAddress(context_.CXXContext, type);
+    
+    id existingObject = (id)address->getNativeObject();
+    
+    if (existingObject) {
+      address = LGGOCXXSharedAddress();
+      [self release];
+      retval = [existingObject retain];
+    } else {
+      retval = self;
+      graphContext = [context_ retain];
+      address->setNativeObject(self);
+    }
   }
-  
-  return self;
+	
+	return retval;
 }
 
 - (void) dealloc {
+  if (address.isValid()) {
+    address->setNativeObject(NULL);
+  }
   [graphContext release];
   
   [super dealloc];
 }
 
 - (NSUInteger)length {
-  NSUInteger retval = std::tr1::dynamic_pointer_cast<LGGOCXXString>(sharedType)->getLength();
+  NSUInteger retval = std::tr1::dynamic_pointer_cast<LGGOCXXString>(*address)->getLength();
   
   return retval;
 }
 
 - (unichar)characterAtIndex:(NSUInteger)index {
-  return std::tr1::dynamic_pointer_cast<LGGOCXXString>(sharedType)->getCharacterAtIndex(index);
+  return std::tr1::dynamic_pointer_cast<LGGOCXXString>(*address)->getCharacterAtIndex(index);
 }
 
 #if 0

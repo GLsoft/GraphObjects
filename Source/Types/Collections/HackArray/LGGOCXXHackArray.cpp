@@ -26,37 +26,18 @@ uint64_t LGGOCXXHackArray::getCount(void) {
   return objects.size();
 }
 
-LGGOCXXSharedType LGGOCXXHackArray::getObjectAtIndex(uint64_t i) {
-  LGGOCXXSharedType retval;
-  
+LGGOCXXSharedAddress LGGOCXXHackArray::getObjectAtIndex(uint64_t i) {  
   assert(objects.size() > i);
-  LGGOCXXAddress address = objects[i];
-  if (address.isNative()) {
-    //FIXME deal with this once addresses support native objects again
-    assert(0);
-  } else {
-    retval = getContext()->resolvedObjectForAddress(address);
-  }
-  return retval;
+  return LGGOCXXSharedAddress(objects[i]);
 }
 
-LGGOCXXAddress LGGOCXXHackArray::getAddress(void) {
-  if (!address.isValid()) {
-    address = getContext()->getNextFreeAddress();
-    //HACK
-    //Remove this once we have native LGGOAddresses
-    getContext()->setResolvedObjectForAddress(shared_from_this(), address);
-  }
-  return LGGOCXXAddress();
+void LGGOCXXHackArray::addObject(const LGGOCXXSharedAddress& object) {
+  objects.push_back(LGGOCXXWeakAddress(object));
 }
 
-void LGGOCXXHackArray::addObject(const LGGOCXXSharedType& object) {
-  objects.push_back(object->getAddress());
-}
-
-void LGGOCXXHackArray::insertObjectAtIndex(const LGGOCXXSharedType& object, uint64_t index) {
-  std::vector<LGGOCXXAddress>::iterator i = objects.begin()+index;
-  objects.insert(i, object->getAddress());
+void LGGOCXXHackArray::insertObjectAtIndex(const LGGOCXXSharedAddress& object, uint64_t index) {
+  std::vector<LGGOCXXWeakAddress>::iterator i = objects.begin()+index;
+  objects.insert(i, LGGOCXXWeakAddress(object));
 }
 
 void LGGOCXXHackArray::removeLastObject (void) {
@@ -64,13 +45,17 @@ void LGGOCXXHackArray::removeLastObject (void) {
 }
 
 void LGGOCXXHackArray::removeObjectAtIndex(uint64_t index) {
-  std::vector<LGGOCXXAddress>::iterator i = objects.begin()+index;
+  std::vector<LGGOCXXWeakAddress>::iterator i = objects.begin()+index;
   objects.erase(i);
 }
 
-void LGGOCXXHackArray::replaceObjectAtIndexWithObject(const LGGOCXXSharedType& object, uint64_t index) {
-  std::vector<LGGOCXXAddress>::iterator i = objects.begin()+index;
-  objects[index] = object->getAddress();
+void LGGOCXXHackArray::replaceObjectAtIndexWithObject(const LGGOCXXSharedAddress& object, uint64_t index) {
+  std::vector<LGGOCXXWeakAddress>::iterator i = objects.begin()+index;
+  objects[index] = LGGOCXXWeakAddress(object);
+}
+
+uint64_t LGGOCXXHackArray::getTagValue (void) {
+  return 0;
 }
 
 LGGOCXXSharedMemoryDescriptor LGGOCXXHackArray::getSerializedData (void) {

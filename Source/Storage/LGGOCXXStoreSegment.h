@@ -47,10 +47,11 @@ typedef std::tr1::shared_ptr<LGGOCXXBaseStoreSegment> LGGOCXXSharedStoreSegment;
 
 virtual class LGGOCXXBaseStoreSegment : public std::tr1::enable_shared_from_this<LGGOCXXBaseStoreSegment> {
 public:
-  virtual void setDescriptorForAddress(const LGGOCXXSharedMemoryDescriptor &object, LGGOCXXAddress address) = 0;
-  virtual LGGOCXXSharedMemoryDescriptor getDescriptorForAddress (LGGOCXXAddress address) = 0;
+  virtual void setDescriptorForAddress(const LGGOCXXSharedMemoryDescriptor &object, uint64_t address) = 0;
+  virtual LGGOCXXSharedMemoryDescriptor getDescriptorForAddress (uint64_t address) = 0;
 };
 
+#if 0
 class LGGOCXXWritableStoreSegment : public LGGOCXXBaseStoreSegment {
 private:
   std::map<LGGOCXXAddress, LGGOCXXSharedMemoryDescriptor> memoryObjects;  
@@ -58,9 +59,10 @@ protected:
 public:    
   LGGOCXXSharedMemoryDescriptor serializeToMemory(void);
   
-  virtual void setDescriptorForAddress(const LGGOCXXSharedMemoryDescriptor &object, LGGOCXXAddress address);  
-  virtual LGGOCXXSharedMemoryDescriptor getDescriptorForAddress (LGGOCXXAddress address);
+  virtual void setDescriptorForAddress(const LGGOCXXSharedMemoryDescriptor &object, uint64_t address);  
+  virtual LGGOCXXSharedMemoryDescriptor getDescriptorForAddress (uint64_t address);
 };
+#endif
 
 class LGGOCXXStoreSegment : public LGGOCXXBaseStoreSegment {
 private:
@@ -74,8 +76,8 @@ private:
 public:
   explicit LGGOCXXStoreSegment(LGGOCXXSharedMemoryDescriptor D);
   
-  virtual void setDescriptorForAddress(const LGGOCXXSharedMemoryDescriptor &object, LGGOCXXAddress address);  
-  virtual LGGOCXXSharedMemoryDescriptor getDescriptorForAddress (LGGOCXXAddress address);
+  virtual void setDescriptorForAddress(const LGGOCXXSharedMemoryDescriptor &object, uint64_t address);  
+  virtual LGGOCXXSharedMemoryDescriptor getDescriptorForAddress (uint64_t address);
 };
 
 #endif

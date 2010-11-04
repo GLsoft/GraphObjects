@@ -217,7 +217,7 @@ const uint64_t LGGOCXXMappedMemoryDescriptor::getSize (void) {
   return 0;
 }
 
-LGGOCXXTaggedMemoryDescriptor::LGGOCXXTaggedMemoryDescriptor(LGGOCXXAddress A) : address(A) { }
+LGGOCXXTaggedMemoryDescriptor::LGGOCXXTaggedMemoryDescriptor(uint64_t A) : address(A) { }
   
 void *LGGOCXXTaggedMemoryDescriptor::getData (void) {
   return static_cast<void *>(&address);

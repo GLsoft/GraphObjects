@@ -41,21 +41,19 @@
 class LGGOCXXString : public LGGOCXXType {
 private:
   LGGOCXXSharedMemoryDescriptor stringDescriptor;
-  LGGOCXXAddress address;
   uint32_t charLength;
   uint32_t byteLength;
   uint8_t offset;
   bool lengthCalculated:1;
   bool dirty:1;
 public:
-  explicit LGGOCXXString(LGGOCXXSharedStoreContext C, std::string S);
+  explicit LGGOCXXString(std::string S);
   uint32_t getLength(void);
 //  void getCharsInRage(uint16_t *buffer, uint32_t start, uint32_t len);
   uint16_t getCharacterAtIndex(uint32_t index);
   
-  virtual LGGOCXXAddress getAddress(void);
+  virtual uint64_t getTagValue (void);
   virtual LGGOCXXSharedMemoryDescriptor getSerializedData (void);
-  
   virtual bool isDirty(void);
   virtual bool isDusty(void);
 };

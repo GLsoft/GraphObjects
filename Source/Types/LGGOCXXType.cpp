@@ -22,24 +22,26 @@
 
 #include "LGGOCXXType.h"
 
-LGGOCXXType::LGGOCXXType(const LGGOCXXSharedStoreContext &C) : context(C), clientData(NULL) {
-
+LGGOCXXType::LGGOCXXType(void) : clientData(NULL) {
+  
 }
 
-LGGOCXXSharedStoreContext LGGOCXXType::getContext(void) {
-  return context;
+LGGOCXXWeakAddress LGGOCXXType::getAddress(void) {
+  return address;
+}
+
+void LGGOCXXType::setAddress (const LGGOCXXWeakAddress &A) {
+  address = A;
 }
 
 void *LGGOCXXType::getNativeObject(void) {
   return clientData;
 }
 
+const LGGOCXXSharedStoreContext &LGGOCXXType::getContext(void) {
+  return address.getContext();
+}
+
 void LGGOCXXType::setNativeObject(void *D) {
-  if (D) {
-    getContext()->nativeObjectRetain(D);
-  }
-  if (clientData) {
-    getContext()->nativeObjectRelease(clientData);
-  }
   clientData = D;
 }

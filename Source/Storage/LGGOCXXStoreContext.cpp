@@ -35,11 +35,10 @@
 
 LGGOCXXStoreContext::LGGOCXXStoreContext(const LGGOCXXSharedStore &S)
   : store(S), nextAddressValue(256), nativeRetainFunc(NULL),  nativeReleaseFunc(NULL) {
-  writableSegment = new LGGOCXXWritableStoreSegment;
 }
 
-LGGOCXXAddress LGGOCXXStoreContext::getNextFreeAddress (void) {
-  LGGOCXXAddress retval = LGGOCXXAddress(nextAddressValue<<4);
+uint64_t LGGOCXXStoreContext::getNextFreeAddress (void) {
+  uint64_t retval = nextAddressValue<<4;
   nextAddressValue++;
   return retval;
 }
@@ -67,77 +66,78 @@ void LGGOCXXStoreContext::nativeObjectRelease(void *nativeObject) {
 //FIXME implement transient save here
 
 void LGGOCXXStoreContext::writeSegment (void) {
+#if 0
   std::ostringstream path;
   
-  int fd = open(store->getStorePath().c_str(), O_WRONLY | O_CREAT);
-  LGGOCXXSharedMemoryDescriptor descriptor = writableSegment->serializeToMemory();
+  LGGOCXXWritableStoreSegment writableSegment;
+  
+  int fd = open(store->getStorePath().c_str(), O_WRONLY | O_CREAT);/  LGGOCXXSharedMemoryDescriptor descriptor = writableSegment.serializeToMemory();
   path << store->getStorePath() << "/" << descriptor->getHash()->getHexValue();
   
   
   if (fd > 0) {
     write(fd, descriptor->getData(), descriptor->getSize());
-    delete writableSegment;
-    writableSegment = new LGGOCXXWritableStoreSegment;
     LGGOCXXSharedMemoryDescriptor newDescriptor = LGGOCXXSharedMemoryDescriptor(new LGGOCXXMappedMemoryDescriptor(path.str()));
     LGGOCXXSharedStoreSegment newSegment = LGGOCXXSharedStoreSegment(new LGGOCXXStoreSegment(newDescriptor));
     segments.push_back(newSegment);
   } else {
     assert(0);
   }
+#endif
+  assert(0);
 }
 
 void LGGOCXXStoreContext::commit (void) {
   //FIXME we need to use a locking protocol here
 }
 
-void LGGOCXXStoreContext::setResolvedObjectForAddress(const LGGOCXXSharedType &object, LGGOCXXAddress address) {
-  //resolvedObjects[address] = LGGOCXXWeakType(object);
-  resolvedObjects[address] = object;
-}
-
-LGGOCXXSharedType LGGOCXXStoreContext::resolvedObjectForAddress(LGGOCXXAddress address) {
-  LGGOCXXSharedType retval;
-  
-  std::map<LGGOCXXAddress,LGGOCXXSharedType>::iterator i;
-  i = resolvedObjects.find(address);
-
-  if (i != resolvedObjects.end()) {
-    retval = i->second;
-  }
-  
-  return retval;
-}
-
 LGGOCXXSharedType LGGOCXXStoreContext::rootObject(void) {
-  return getObjectForAddress(LGGOCXXAddress(1<<4));
+  LGGOCXXSharedAddress address(getAddress(1<<4));
+  return *address;
 }
 
 void LGGOCXXStoreContext::setRootObject(const LGGOCXXSharedType &object) {
-  setResolvedObjectForAddress(object, LGGOCXXAddress(1<<4));
-  setObjectForAddress(object, LGGOCXXAddress(1<<4));
+  LGGOCXXSharedAddress address(shared_from_this(), 1<<4);
+  address.setType(object);
 }
 
-void LGGOCXXStoreContext::setObjectForAddress(const LGGOCXXSharedType &object, LGGOCXXAddress address) {
-  //FIXME this could be deferred
-  writableSegment->setDescriptorForAddress(object->getSerializedData(), address);
-}
-
-LGGOCXXSharedType LGGOCXXStoreContext::getObjectForAddress (LGGOCXXAddress address) {
-  LGGOCXXSharedType retval = resolvedObjectForAddress(address);
+LGGOCXXSharedAddress LGGOCXXStoreContext::getAddress (uint64_t address) {
+  std::map<uint64_t,LGGOCXXWeakAddress>::iterator i = addresses.find(address);
   
-  if (retval.get() == NULL) {
-    LGGOCXXSharedMemoryDescriptor descriptor = writableSegment->getDescriptorForAddress(address);
+  if (i == addresses.end()) {
+    return LGGOCXXSharedAddress(i->second);
+  } else {
+    assert(0);
+    LGGOCXXSharedAddress retval = LGGOCXXSharedAddress(shared_from_this(), address);
+    setAddressForAddressValue(LGGOCXXWeakAddress(retval), address);
+    return retval;
+  }
+};
+
+void LGGOCXXStoreContext::setAddressForAddressValue(const LGGOCXXWeakAddress& address, uint64_t addressValue) {
+//   addresses[addressValue] = address;
+  addresses.insert(std::pair<uint64_t, LGGOCXXWeakAddress>(addressValue, address));
+}
+
+LGGOCXXSharedAddress LGGOCXXStoreContext::getAddressForAddressValue(uint64_t addressValue) {
+  std::map<uint64_t,LGGOCXXWeakAddress>::iterator i = addresses.find(addressValue);
+
+  if (i != addresses.end()) {
+    return LGGOCXXSharedAddress(i->second);
+  }
+  
+  return LGGOCXXSharedAddress();
+}
+
+LGGOCXXSharedMemoryDescriptor LGGOCXXStoreContext::getDescriptorForAddress (uint64_t address) {
+  LGGOCXXSharedMemoryDescriptor retval;
     
-    if (descriptor.get() == NULL) {
+  std::vector<LGGOCXXSharedStoreSegment>::iterator i;
+  for (i = segments.begin(); i != segments.end(); ++i) {
+    retval = (*i)->getDescriptorForAddress(address);
     
-      std::vector<LGGOCXXSharedStoreSegment>::iterator i;
-      for (i = segments.begin(); i != segments.end(); ++i) {
-        descriptor = writableSegment->getDescriptorForAddress(address);
-        
-        if (descriptor.get() != NULL) {
-          break;
-        }
-      }
+    if (retval.get() != NULL) {
+      break;
     }
   }
   

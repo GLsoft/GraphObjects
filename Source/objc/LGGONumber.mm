@@ -30,49 +30,74 @@
 #import "LGGONumber.h"
 
 @interface LGGONumber () {
-  LGGOCXXSharedType sharedType;
+  LGGOCXXSharedAddress address;
   LGGOGraphContext *graphContext;
 }
 
-@property LGGOCXXSharedType sharedType;
+@property LGGOCXXSharedAddress address;
 @end
 
 @implementation LGGONumber
 
-- (id)initWithNumber:(NSNumber *)number_ inContext:(LGGOGraphContext *)context_ {
+- (id)initWithGraphObject:(const LGGOCXXSharedAddress &)graphObject inContext:(LGGOGraphContext *)context_ {
 	self = [super init];
-	
-	if (self) {
-    sharedType = LGGOCXXSharedType(new LGGOCXXNumber(context_.CXXContext, (int64_t)(number_.longLongValue)));
-    graphContext = [context_ retain];
-    sharedType->setNativeObject(self);
-    
-
-  }
-	
-	return self;
-}
-
-- (id)initWithGraphObject:(const LGGOCXXSharedType &)graphObject inContext:(LGGOGraphContext *)context_ {
-  self = [super init];
+  id retval;
   
   if (self) {
-    sharedType = graphObject;
-    graphContext = [context_ retain];
-    sharedType->setNativeObject(self);
+    address = graphObject;
+    
+    id existingObject = (id)address->getNativeObject();
+    
+    if (existingObject) {
+      address = LGGOCXXSharedAddress();
+      [self release];
+      retval = [existingObject retain];
+    } else {
+      graphContext = [context_ retain];
+      address->setNativeObject(self);
+    }
   }
   
-  return self;
+  return retval;
+}
+
+
+- (id)initWithNumber:(NSNumber *)number_ inContext:(LGGOGraphContext *)context_ {
+	self = [super init];
+  id retval;
+  
+  if (self) {
+    LGGOCXXSharedType type(new LGGOCXXNumber(number_.longLongValue));
+    address = LGGOCXXSharedAddress(context_.CXXContext, type);
+    
+    id existingObject = (id)address->getNativeObject();
+    
+    if (existingObject) {
+      //We do this here so that the when the ObjC runtime destructs the C++ ivar it has an empty object to chew on
+      address = LGGOCXXSharedAddress();
+      [self release];
+      retval = [existingObject retain];
+    } else {
+      retval = self;
+      graphContext = [context_ retain];
+      address->setNativeObject(self);
+    }
+  }
+	
+	return retval;
 }
 
 - (void) dealloc {
+  if (address.isValid()) {
+    address->setNativeObject(NULL);
+  }
   [graphContext release];
   
   [super dealloc];
 }
 
 - (void)getValue:(void *)value_ {
-  std::tr1::shared_ptr<LGGOCXXNumber> sharedNumber = std::tr1::dynamic_pointer_cast<LGGOCXXNumber>(sharedType);
+  std::tr1::shared_ptr<LGGOCXXNumber> sharedNumber = std::tr1::dynamic_pointer_cast<LGGOCXXNumber>(*address);
 	switch(sharedNumber->getType()) {
 		case kLGGOCXX8BitSignedNumberType:
     case kLGGOCXX16BitSignedNumberType:
@@ -95,7 +120,7 @@
 
 #define LGGO_NUMBER_ACCESSOR(datatype, name)                                                                    \
 - (datatype)name {                                                                                              \
-  std::tr1::shared_ptr<LGGOCXXNumber> sharedNumber = std::tr1::dynamic_pointer_cast<LGGOCXXNumber>(sharedType); \
+  std::tr1::shared_ptr<LGGOCXXNumber> sharedNumber = std::tr1::dynamic_pointer_cast<LGGOCXXNumber>(*address);   \
   datatype retval;                                                                                              \
   switch(sharedNumber->getType()) {                                                                             \
     case kLGGOCXX8BitSignedNumberType :                                                                         \
@@ -131,7 +156,7 @@ LGGO_NUMBER_ACCESSOR(NSUInteger, unsignedIntegerValue)
 - (const char *)objCType {
   const char *retval;
   
-  switch(std::tr1::dynamic_pointer_cast<LGGOCXXNumber>(sharedType)->getType()) {                                                       
+  switch(std::tr1::dynamic_pointer_cast<LGGOCXXNumber>(*address)->getType()) {                                                       
     case kLGGOCXX8BitSignedNumberType : retval = "c"; break;
     case kLGGOCXX8BitUnsignedNumberType : retval = "C"; break;
     case kLGGOCXX16BitSignedNumberType : retval = "i"; break;

@@ -27,6 +27,7 @@
 #if defined __cplusplus
 #include "LGGOCXXStoreContext.h"
 #include "LGGOCXXType.h"
+#include "LGGOCXXAddress.h"
 #endif
 
 @interface LGGOGraphContext : NSObject
@@ -35,8 +36,8 @@
 - (id)initWithCXXContext:(const LGGOCXXSharedStoreContext&)context_;
 @property (copy, nonatomic) id rootObject;
 
-- (id) transmuteToNativeObject:(LGGOCXXSharedType)graphObject;
-- (LGGOCXXSharedType) transmuteToGraphObject:(id)object;
+- (id) transmuteToNativeObject:(LGGOCXXSharedAddress)address;
+- (LGGOCXXSharedAddress) transmuteToGraphObject:(id)object;
 
 @property (nonatomic, readonly) LGGOCXXSharedStoreContext CXXContext;
 #endif

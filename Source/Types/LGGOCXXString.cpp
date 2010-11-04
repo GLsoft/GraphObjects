@@ -27,20 +27,21 @@
 
 #include "utf8.h"
 
-LGGOCXXString::LGGOCXXString(LGGOCXXSharedStoreContext C, std::string S)
-  : LGGOCXXType(C), charLength(0), lengthCalculated(false), dirty(true), address(0) {
+LGGOCXXString::LGGOCXXString(std::string S)
+  : LGGOCXXType(), charLength(0), lengthCalculated(false), dirty(true) {
   byteLength = S.size();
 
   if(byteLength <= 7) {
     uint32_t i;
-    uint8_t *buffer = (uint8_t *)&address;
+    uint8_t buffer[8];
+    
     buffer[0] = kLGGOAddressStringType | (uint8_t)byteLength << 4;
     
     for(i = 0; i < byteLength; ++i) {
       buffer[i+1] = S[i];
     }
     
-    stringDescriptor = LGGOCXXSharedMemoryDescriptor(new LGGOCXXTaggedMemoryDescriptor(address));
+    stringDescriptor = LGGOCXXSharedMemoryDescriptor(new LGGOCXXTaggedMemoryDescriptor(*((uint64_t *)&buffer[0])));
   } else {
     uint8_t *buffer = static_cast<uint8_t *>(malloc(byteLength+1));
     buffer[0] = kLGGOAddressStringType | (uint8_t)0xff << 4;
@@ -50,6 +51,17 @@ LGGOCXXString::LGGOCXXString(LGGOCXXSharedStoreContext C, std::string S)
     stringDescriptor = LGGOCXXSharedMemoryDescriptor(new LGGOCXXMemoryDescriptor(buffer, byteLength+1, false, false));
   }
 }
+
+uint64_t LGGOCXXString::getTagValue (void) {
+  uint64_t retval = 0;
+  
+  if (byteLength <= 7) {
+    retval = *((uint64_t *)stringDescriptor->getData());
+  }
+  
+  return retval;
+}
+
 
 bool LGGOCXXString::isDirty(void) {
   return dirty;
@@ -107,18 +119,6 @@ uint16_t LGGOCXXString::getCharacterAtIndex(uint32_t index) {
   }
   
   return retval;
-}
-
-LGGOCXXAddress LGGOCXXString::getAddress(void) {
-  if (!address.isValid()) {
-    address = getContext()->getNextFreeAddress();
-  }
-  
-  //HACK
-  //Remove this once we have native LGGOAddresses
-  getContext()->setResolvedObjectForAddress(shared_from_this(), address);
-  
-  return address;
 }
 
 LGGOCXXSharedMemoryDescriptor LGGOCXXString::getSerializedData (void) {

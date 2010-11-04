@@ -34,22 +34,21 @@ class LGGOCXXObject;
 
 class LGGOCXXHackArray : public LGGOCXXType {
 private:
-  LGGOCXXAddress address;
-  std::vector<LGGOCXXAddress> objects;
+  std::vector<LGGOCXXWeakAddress> objects;
   bool dirty:1;
 public:
-  LGGOCXXHackArray(LGGOCXXSharedStoreContext C) : LGGOCXXType(C), address(0), dirty(true) { }
+  LGGOCXXHackArray(void) : LGGOCXXType(), dirty(true) { }
   
   uint64_t getCount(void);
-  LGGOCXXSharedType getObjectAtIndex(uint64_t i);
+  LGGOCXXSharedAddress getObjectAtIndex(uint64_t i);
   
-  void addObject(const LGGOCXXSharedType& object);
-  void insertObjectAtIndex(const LGGOCXXSharedType& object, uint64_t index);
+  void addObject(const LGGOCXXSharedAddress& object);
+  void insertObjectAtIndex(const LGGOCXXSharedAddress& object, uint64_t index);
   void removeLastObject (void);
   void removeObjectAtIndex(uint64_t index);
-  void replaceObjectAtIndexWithObject(const LGGOCXXSharedType& object, uint64_t index);
+  void replaceObjectAtIndexWithObject(const LGGOCXXSharedAddress& object, uint64_t index);
   
-  virtual LGGOCXXAddress getAddress(void);
+  virtual uint64_t getTagValue (void);
   virtual LGGOCXXSharedMemoryDescriptor getSerializedData (void);
   virtual bool isDirty(void);
   virtual bool isDusty(void);

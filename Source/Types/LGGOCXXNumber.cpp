@@ -27,11 +27,11 @@
 #define LGGO_MAX_INT59 ((int64_t)0x03ffffffffffffff)
 #define LGGO_MIN_INT59 ((int64_t)(-1*LGGO_MAX_INT59))
 
-LGGOCXXNumber::LGGOCXXNumber(LGGOCXXSharedStoreContext C, int64_t N) : LGGOCXXType(C), dirty(true), address(0) {
+LGGOCXXNumber::LGGOCXXNumber(int64_t N) : LGGOCXXType(), dirty(true), rawValue(N) {
+  rawValue = *((uint64_t *)&N);
+  
   if (N >= 0) {
     if (N <= LGGO_MAX_INT59) {
-      address = LGGOCXXAddress(((uint64_t)kLGGOAddressNumberType) | ((uint64_t)LGGOCXXIntegerTypeEncoding << 4) | ((uint64_t)N << 5));
-      
       if (N > UINT32_MAX) {
         type = kLGGOCXX64BitUnsignedNumberType;
       } else if (N > UINT16_MAX) {
@@ -44,15 +44,9 @@ LGGOCXXNumber::LGGOCXXNumber(LGGOCXXSharedStoreContext C, int64_t N) : LGGOCXXTy
       
     } else {
       assert(0 && "Deal with oversized ints");
-    }
-      
+    }      
   } else {
     if (N >= LGGO_MIN_INT59) {
-      //We do not use twos complement here because we don't always know how many bits our type is
-      uint64_t absValue = -1*N;
-      
-      address = LGGOCXXAddress(kLGGOAddressNumberType | LGGOCXXIntegerTypeEncoding << 4 | ((uint64_t)absValue << 5) | ((uint64_t)0x1 << 63));
-      
       if (N < INT32_MIN) {
         type = kLGGOCXX64BitSignedNumberType;
       } else if (N < INT16_MIN) {
@@ -72,12 +66,22 @@ LGGOCXXScalarEncodingType LGGOCXXNumber::getType(void) {
   return type;
 }
 
-LGGOCXXAddress LGGOCXXNumber::getAddress(void) {
-  //HACK
-  //Remove this once we have native LGGOAddresses
-  getContext()->setResolvedObjectForAddress(shared_from_this(), address);
-  
-  return address;
+uint64_t LGGOCXXNumber::getTagValue (void) {
+  switch(type) {
+    case kLGGOCXX64BitUnsignedNumberType:
+    case kLGGOCXX32BitUnsignedNumberType:
+    case kLGGOCXX16BitUnsignedNumberType:
+    case kLGGOCXX8BitUnsignedNumberType:
+      return ((uint64_t)kLGGOAddressNumberType) | ((uint64_t)LGGOCXXIntegerTypeEncoding << 4) | ((uint64_t)rawValue << 5);
+    case kLGGOCXX64BitSignedNumberType:
+    case kLGGOCXX32BitSignedNumberType:
+    case kLGGOCXX16BitSignedNumberType:
+    case kLGGOCXX8BitSignedNumberType:
+      return ((uint64_t)kLGGOAddressNumberType) | ((uint64_t)LGGOCXXIntegerTypeEncoding << 4) | ((*((int64_t *)&rawValue)) << 5) | (uint64_t)1 << 63;
+    default:
+      assert(0);
+      break;
+  }
 }
 
 LGGOCXXSharedMemoryDescriptor LGGOCXXNumber::getSerializedData(void) {
@@ -93,21 +97,11 @@ bool LGGOCXXNumber::isDusty(void) {
 }
 
 int64_t LGGOCXXNumber::signedValue (void) {
-  const uint64_t addressValue = address.getAddressValue();
-  bool signBit = (uint64_t)addressValue >> 63;
-  int64_t retval;
-  
-  uint64_t absValue = ((uint64_t)(addressValue & 0x7fffffffffffffff) >> 5);
-  if (signBit) {
-    retval = -1 * absValue;
-  } else {
-    retval = absValue;
-  }
-  return retval;
+  return *((int64_t *)&rawValue);
 }
 
 uint64_t LGGOCXXNumber::unsignedValue (void) {
-  return  (address.getAddressValue() >> 5);
+  return *((uint64_t *)&rawValue);
 }
 
 float LGGOCXXNumber::floatValue(void) {

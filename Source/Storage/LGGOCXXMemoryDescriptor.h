@@ -109,9 +109,9 @@ public:
 
 class LGGOCXXTaggedMemoryDescriptor : public LGGOCXXCoreMemoryDescriptor {
 private:
-  LGGOCXXAddress address;
+  uint64_t address;
 public:
-  explicit LGGOCXXTaggedMemoryDescriptor(LGGOCXXAddress A);
+  explicit LGGOCXXTaggedMemoryDescriptor(uint64_t A);
   
   virtual void *getData (void);
   virtual const uint64_t getSize (void);

@@ -37,6 +37,7 @@
 		BF532C2212796F240040B280 /* LGGOGraph.h in Headers */ = {isa = PBXBuildFile; fileRef = BF532C2012796F240040B280 /* LGGOGraph.h */; };
 		BF532C2312796F240040B280 /* LGGOGraph.mm in Sources */ = {isa = PBXBuildFile; fileRef = BF532C2112796F240040B280 /* LGGOGraph.mm */; };
 		BF6637F212765349000B4A8D /* GraphObjects.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF33553F1276519600F34934 /* GraphObjects.framework */; };
+		BF7C08AA12832CC100BFD1DB /* LGGOCXXAddress.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF7C08A912832CC100BFD1DB /* LGGOCXXAddress.cpp */; };
 		BFA13448127653DA00D13611 /* LGGOArrayTests.m in Sources */ = {isa = PBXBuildFile; fileRef = BFA1343F127653DA00D13611 /* LGGOArrayTests.m */; };
 		BFA13449127653DA00D13611 /* LGGOGraphTests.m in Sources */ = {isa = PBXBuildFile; fileRef = BFA13441127653DA00D13611 /* LGGOGraphTests.m */; };
 		BFA1344A127653DA00D13611 /* LGGOCXXStoreSegmentTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = BFA13443127653DA00D13611 /* LGGOCXXStoreSegmentTests.mm */; };
@@ -97,6 +98,7 @@
 		BF532C2112796F240040B280 /* LGGOGraph.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = LGGOGraph.mm; sourceTree = "<group>"; };
 		BF6637E91276532E000B4A8D /* GraphObjectsTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GraphObjectsTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF6637EA1276532E000B4A8D /* GraphObjectsTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GraphObjectsTests-Info.plist"; sourceTree = "<group>"; };
+		BF7C08A912832CC100BFD1DB /* LGGOCXXAddress.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LGGOCXXAddress.cpp; sourceTree = "<group>"; };
 		BFA1343E127653DA00D13611 /* LGGOArrayTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LGGOArrayTests.h; sourceTree = "<group>"; };
 		BFA1343F127653DA00D13611 /* LGGOArrayTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LGGOArrayTests.m; sourceTree = "<group>"; };
 		BFA13440127653DA00D13611 /* LGGOGraphTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LGGOGraphTests.h; sourceTree = "<group>"; };
@@ -277,6 +279,7 @@
 			children = (
 				BFD68E4C1278C4DC004CBBD2 /* unicode */,
 				BF3355761276523900F34934 /* LGGOCXXAddress.h */,
+				BF7C08A912832CC100BFD1DB /* LGGOCXXAddress.cpp */,
 				BF3355771276523900F34934 /* LGGOByteOrder.h */,
 			);
 			path = Utilities;
@@ -456,6 +459,7 @@
 				BFA37A1D1280D5CC002A0892 /* LGGOCXXHackArray.cpp in Sources */,
 				BFA37A211280D930002A0892 /* LGGOMutableArray.mm in Sources */,
 				BFA37A241280DC59002A0892 /* LGGOCXXObject.cpp in Sources */,
+				BF7C08AA12832CC100BFD1DB /* LGGOCXXAddress.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
