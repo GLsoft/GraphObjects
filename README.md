@@ -13,3 +13,4 @@ __Usage__
 You probably don't want to use this yet unless you are intending to hack on it. It's API is similiar to CoreData, though there is no modeler (it derives object info directly from LGGOObjects). The only header files that should be considered public to framework clients are LGGOGraph.h and LGGOGraphContext.h, and even those currently leak some private details.
 
 Mailing List: [http://groups.google.com/group/graphobjects](http://groups.google.com/group/graphobjects)
+Contributor Agreement: [https://github.com/GLsoft/GraphObjects/raw/master/GCA.pdf](https://github.com/GLsoft/GraphObjects/raw/master/GCA.pdf)
