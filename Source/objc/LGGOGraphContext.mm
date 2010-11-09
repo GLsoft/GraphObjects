@@ -44,10 +44,10 @@
 @implementation LGGOGraphContext
 
 - (id)initWithCXXContext:(const LGGOCXXSharedStoreContext&)context_  {
-    if ((self = [super init])) {
+  self = [super init];
+  
+    if (self) {
       CXXContext = context_;
-      CXXContext->setNativeObjectRetain((void (*)(void *))&CFRetain);
-      CXXContext->setNativeObjectRelease((void (*)(void *))&CFRelease);
     }
     
     return self;

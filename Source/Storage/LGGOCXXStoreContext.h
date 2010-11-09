@@ -50,8 +50,6 @@ private:
 //  LGGOCXXWritableStoreSegment *writableSegment;
   std::vector<LGGOCXXSharedStoreSegment> segments;
   uint64_t nextAddressValue;
-   void (*nativeReleaseFunc)(void *);
-   void (*nativeRetainFunc)(void *);
   
   std::map<uint64_t,LGGOCXXWeakAddress> addresses;
   //FIXME this should be weak, but without native types that can bump shared_ptrs it needs to be strong for now
@@ -63,12 +61,6 @@ public:
    
   LGGOCXXType * rootObject(void);
   void setRootObject(LGGOCXXType *T);
-  
-  
-  void setNativeObjectRetain(void (*NRF)(void *));
-  void setNativeObjectRelease(void (*NRF)(void *));
-  void nativeObjectRetain(void *nativeObject);
-  void nativeObjectRelease(void *nativeObject);
   
   LGGOCXXSharedAddress getAddress (uint64_t address);
   LGGOCXXSharedMemoryDescriptor getDescriptorForAddress (uint64_t address);

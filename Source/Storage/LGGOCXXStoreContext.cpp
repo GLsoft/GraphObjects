@@ -34,33 +34,13 @@
 #include "LGGOCXXStoreContext.h"
 
 LGGOCXXStoreContext::LGGOCXXStoreContext(const LGGOCXXSharedStore &S)
-  : store(S), nextAddressValue(256), nativeRetainFunc(NULL),  nativeReleaseFunc(NULL) {
+  : store(S), nextAddressValue(256) {
 }
 
 uint64_t LGGOCXXStoreContext::getNextFreeAddress (void) {
   uint64_t retval = nextAddressValue<<4;
   nextAddressValue++;
   return retval;
-}
-
-void LGGOCXXStoreContext::setNativeObjectRetain(void (*NRF)(void *)) {
-  nativeRetainFunc = NRF;
-}
-
-void LGGOCXXStoreContext::setNativeObjectRelease(void (*NRF)(void *)) {
-  nativeReleaseFunc = NRF;
-}
-
-void LGGOCXXStoreContext::nativeObjectRetain(void *nativeObject) {
-  if (nativeRetainFunc) {
-    nativeRetainFunc(nativeObject);
-  }
-}
-
-void LGGOCXXStoreContext::nativeObjectRelease(void *nativeObject) {
-  if (nativeReleaseFunc) {
-    nativeReleaseFunc(nativeObject);
-  }
 }
 
 //FIXME implement transient save here
