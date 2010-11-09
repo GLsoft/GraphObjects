@@ -7,10 +7,11 @@ GraphObjects is intended to work on Mac OS X 10.6+ and iOS 4.2+. The underlying 
 __Building__
 
 GraphObjects requires a clang 2.0 toolchain in order to build. that mean that no currently released build of Xcode can build it out of box. In order to build it you either need to build a a custom MacOS X 10.6 or iOS 4.2 SDK using a copy of clang pulled from their repository, hack up your system compilers, or use unreleased developer tool previews. While GraphObjects has occasionally been built for iOS, it currently is being primarily brought up on Mac OS X x86.
-    
+
 __Usage__
 
 You probably don't want to use this yet unless you are intending to hack on it. It's API is similiar to CoreData, though there is no modeler (it derives object info directly from LGGOObjects). The only header files that should be considered public to framework clients are LGGOGraph.h and LGGOGraphContext.h, and even those currently leak some private details.
 
-Mailing List: [http://groups.google.com/group/graphobjects](http://groups.google.com/group/graphobjects)
-Contributor Agreement: [https://github.com/GLsoft/GraphObjects/raw/master/GCA.pdf](https://github.com/GLsoft/GraphObjects/raw/master/GCA.pdf)
+* Mailing List: [http://groups.google.com/group/graphobjects](http://groups.google.com/group/graphobjects)
+* Contributor Agreement: [https://github.com/GLsoft/GraphObjects/raw/master/GCA.pdf](https://github.com/GLsoft/GraphObjects/raw/master/GCA.pdf)
+* Github repo: [https://github.com/GLsoft/GraphObjects](https://github.com/GLsoft/GraphObjects)
