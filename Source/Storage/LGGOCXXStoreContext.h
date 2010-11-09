@@ -61,8 +61,8 @@ public:
   void writeSegment (void);
   void commit (void);
    
-  LGGOCXXSharedType rootObject(void);
-  void setRootObject(const LGGOCXXSharedType &object);
+  LGGOCXXType * rootObject(void);
+  void setRootObject(LGGOCXXType *T);
   
   
   void setNativeObjectRetain(void (*NRF)(void *));

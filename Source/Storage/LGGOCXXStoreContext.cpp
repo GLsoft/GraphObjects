@@ -91,14 +91,14 @@ void LGGOCXXStoreContext::commit (void) {
   //FIXME we need to use a locking protocol here
 }
 
-LGGOCXXSharedType LGGOCXXStoreContext::rootObject(void) {
+LGGOCXXType * LGGOCXXStoreContext::rootObject(void) {
   LGGOCXXSharedAddress address(getAddress(1<<4));
   return *address;
 }
 
-void LGGOCXXStoreContext::setRootObject(const LGGOCXXSharedType &object) {
+void LGGOCXXStoreContext::setRootObject(LGGOCXXType *T) {
   LGGOCXXSharedAddress address(shared_from_this(), 1<<4);
-  address.setType(object);
+  address.setType(T);
 }
 
 LGGOCXXSharedAddress LGGOCXXStoreContext::getAddress (uint64_t address) {

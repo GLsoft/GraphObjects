@@ -64,8 +64,7 @@
   id retval;
   
   if (self) {
-    LGGOCXXSharedType type(new LGGOCXXString(std::string(string_.UTF8String)));
-    address = LGGOCXXSharedAddress(context_.CXXContext, type);
+    address = LGGOCXXSharedAddress(context_.CXXContext, new LGGOCXXString(std::string(string_.UTF8String)));
     
     id existingObject = (id)address->getNativeObject();
     
@@ -92,14 +91,12 @@
   [super dealloc];
 }
 
-- (NSUInteger)length {
-  NSUInteger retval = std::tr1::dynamic_pointer_cast<LGGOCXXString>(*address)->getLength();
-  
-  return retval;
+- (NSUInteger)length {  
+  return dynamic_cast<LGGOCXXString *>(*address)->getLength();
 }
 
 - (unichar)characterAtIndex:(NSUInteger)index {
-  return std::tr1::dynamic_pointer_cast<LGGOCXXString>(*address)->getCharacterAtIndex(index);
+  return dynamic_cast<LGGOCXXString *>(*address)->getCharacterAtIndex(index);
 }
 
 #if 0

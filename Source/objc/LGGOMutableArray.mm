@@ -60,8 +60,7 @@
   self = [super init];
   
   if (self) {
-    LGGOCXXSharedType type(new LGGOCXXHackArray());
-    address = LGGOCXXSharedAddress(context_.CXXContext, type);
+    address = LGGOCXXSharedAddress(context_.CXXContext, new LGGOCXXHackArray());
     graphContext = [context_ retain];
     address->setNativeObject(self);
   }
@@ -79,12 +78,11 @@
 }
 
 - (NSUInteger)count {
-  NSUInteger retval = std::tr1::dynamic_pointer_cast<LGGOCXXHackArray>(*address)->getCount();
-  return retval;
+  return dynamic_cast<LGGOCXXHackArray *>(*address)->getCount();
 }
 
 - (id)objectAtIndex:(NSUInteger)index {
-  LGGOCXXSharedAddress typedObject = std::tr1::dynamic_pointer_cast<LGGOCXXHackArray>(*address)->getObjectAtIndex(index);
+  LGGOCXXSharedAddress typedObject = dynamic_cast<LGGOCXXHackArray *>(*address)->getObjectAtIndex(index);
   id retval = (id)typedObject->getNativeObject();
   
   if (!retval) {
@@ -97,27 +95,27 @@
 - (void)addObject:(id)anObject {
   LGGOCXXSharedAddress objectAddress = [graphContext transmuteToGraphObject:anObject];
   
-  std::tr1::dynamic_pointer_cast<LGGOCXXHackArray>(*address)->addObject(objectAddress);
+  dynamic_cast<LGGOCXXHackArray *>(*address)->addObject(objectAddress);
 }
 
 - (void)insertObject:(id)anObject atIndex:(NSUInteger)index {
   LGGOCXXSharedAddress objectAddress = [graphContext transmuteToGraphObject:anObject];
   
-  std::tr1::dynamic_pointer_cast<LGGOCXXHackArray>(*address)->insertObjectAtIndex(objectAddress, index);
+  dynamic_cast<LGGOCXXHackArray *>(*address)->insertObjectAtIndex(objectAddress, index);
 }
 
 - (void)removeLastObject {
-  std::tr1::dynamic_pointer_cast<LGGOCXXHackArray>(*address)->removeLastObject();
+  dynamic_cast<LGGOCXXHackArray *>(*address)->removeLastObject();
 }
 
 - (void)removeObjectAtIndex:(NSUInteger)index {
-  std::tr1::dynamic_pointer_cast<LGGOCXXHackArray>(*address)->removeObjectAtIndex(index);
+  dynamic_cast<LGGOCXXHackArray *>(*address)->removeObjectAtIndex(index);
 }
 
 - (void)replaceObjectAtIndex:(NSUInteger)index withObject:(id)anObject {
   LGGOCXXSharedAddress objectAddress = [graphContext transmuteToGraphObject:anObject];
 
-  std::tr1::dynamic_pointer_cast<LGGOCXXHackArray>(*address)->replaceObjectAtIndexWithObject(objectAddress, index);
+  dynamic_cast<LGGOCXXHackArray *>(*address)->replaceObjectAtIndexWithObject(objectAddress, index);
 }
 
 @end

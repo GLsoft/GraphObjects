@@ -67,8 +67,7 @@
   id retval;
   
   if (self) {
-    LGGOCXXSharedType type(new LGGOCXXNumber(number_.longLongValue));
-    address = LGGOCXXSharedAddress(context_.CXXContext, type);
+    address = LGGOCXXSharedAddress(context_.CXXContext, new LGGOCXXNumber(number_.longLongValue));
     
     id existingObject = (id)address->getNativeObject();
     
@@ -97,7 +96,7 @@
 }
 
 - (void)getValue:(void *)value_ {
-  std::tr1::shared_ptr<LGGOCXXNumber> sharedNumber = std::tr1::dynamic_pointer_cast<LGGOCXXNumber>(*address);
+  LGGOCXXNumber *sharedNumber = dynamic_cast<LGGOCXXNumber *>(*address);
 	switch(sharedNumber->getType()) {
 		case kLGGOCXX8BitSignedNumberType:
     case kLGGOCXX16BitSignedNumberType:
@@ -118,22 +117,22 @@
 	}
 }
 
-#define LGGO_NUMBER_ACCESSOR(datatype, name)                                                                    \
-- (datatype)name {                                                                                              \
-  std::tr1::shared_ptr<LGGOCXXNumber> sharedNumber = std::tr1::dynamic_pointer_cast<LGGOCXXNumber>(*address);   \
-  datatype retval;                                                                                              \
-  switch(sharedNumber->getType()) {                                                                             \
-    case kLGGOCXX8BitSignedNumberType :                                                                         \
-    case kLGGOCXX16BitSignedNumberType :                                                                        \
-    case kLGGOCXX32BitSignedNumberType :                                                                        \
-    case kLGGOCXX64BitSignedNumberType :  retval = sharedNumber->signedValue(); break;                          \
-    case kLGGOCXX8BitUnsignedNumberType :                                                                       \
-    case kLGGOCXX16BitUnsignedNumberType :                                                                      \
-    case kLGGOCXX32BitUnsignedNumberType :                                                                      \
-    case kLGGOCXX64BitUnsignedNumberType :  retval = sharedNumber->unsignedValue(); break;                      \
-    default: assert(0); break;                                                                                  \
-  }                                                                                                             \
-  return retval;                                                                                                \
+#define LGGO_NUMBER_ACCESSOR(datatype, name)                                                \
+- (datatype)name {                                                                          \
+  LGGOCXXNumber *sharedNumber = dynamic_cast<LGGOCXXNumber *>(*address);                    \
+  datatype retval;                                                                          \
+  switch(sharedNumber->getType()) {                                                         \
+    case kLGGOCXX8BitSignedNumberType :                                                     \
+    case kLGGOCXX16BitSignedNumberType :                                                    \
+    case kLGGOCXX32BitSignedNumberType :                                                    \
+    case kLGGOCXX64BitSignedNumberType :  retval = sharedNumber->signedValue(); break;      \
+    case kLGGOCXX8BitUnsignedNumberType :                                                   \
+    case kLGGOCXX16BitUnsignedNumberType :                                                  \
+    case kLGGOCXX32BitUnsignedNumberType :                                                  \
+    case kLGGOCXX64BitUnsignedNumberType :  retval = sharedNumber->unsignedValue(); break;  \
+    default: assert(0); break;                                                              \
+  }                                                                                         \
+  return retval;                                                                            \
 }
 
 LGGO_NUMBER_ACCESSOR(char, charValue)
@@ -156,7 +155,7 @@ LGGO_NUMBER_ACCESSOR(NSUInteger, unsignedIntegerValue)
 - (const char *)objCType {
   const char *retval;
   
-  switch(std::tr1::dynamic_pointer_cast<LGGOCXXNumber>(*address)->getType()) {                                                       
+  switch(dynamic_cast<LGGOCXXNumber *>(*address)->getType()) {                                                       
     case kLGGOCXX8BitSignedNumberType : retval = "c"; break;
     case kLGGOCXX8BitUnsignedNumberType : retval = "C"; break;
     case kLGGOCXX16BitSignedNumberType : retval = "i"; break;

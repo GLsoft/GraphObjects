@@ -23,8 +23,8 @@
 #include <tr1/memory>
 
 virtual class LGGOCXXType;
-typedef std::tr1::shared_ptr<LGGOCXXType> LGGOCXXSharedType;
-typedef std::tr1::weak_ptr<LGGOCXXType> LGGOCXXWeakType;
+//typedef std::tr1::shared_ptr<LGGOCXXType> LGGOCXXSharedType;
+//typedef std::tr1::weak_ptr<LGGOCXXType> LGGOCXXWeakType;
 
 #ifndef LGGOCXXTYPE_H
 #define LGGOCXXTYPE_H
@@ -66,7 +66,7 @@ typedef enum {
   kLGGOCXXClassByReferenceType = 1
 } LGGOCXXRelationSemanticsType;
 
-virtual class LGGOCXXType : public std::tr1::enable_shared_from_this<LGGOCXXType> {
+class LGGOCXXType {
 private:
   LGGOCXXWeakAddress address;
   void *clientData;

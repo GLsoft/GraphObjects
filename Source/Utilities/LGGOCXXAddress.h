@@ -49,12 +49,12 @@ class LGGOCXXAddress {
 private:
   uint64_t address;
   LGGOCXXSharedStoreContext context;
-  LGGOCXXSharedType type;
+  LGGOCXXType *type;
   uint32_t strongRefCount;
   uint32_t weakRefCount;
 public:
-  explicit LGGOCXXAddress(const LGGOCXXSharedStoreContext& C, const LGGOCXXSharedType &T, uint64_t A);
-  explicit LGGOCXXAddress(const LGGOCXXSharedStoreContext& C, const LGGOCXXSharedType &T);
+  explicit LGGOCXXAddress(const LGGOCXXSharedStoreContext& C, LGGOCXXType *T, uint64_t A);
+  explicit LGGOCXXAddress(const LGGOCXXSharedStoreContext& C, LGGOCXXType *T);
   const uint64_t getAddressValue (void);
   
   const LGGOSimpleType getType (void) const;
@@ -75,11 +75,11 @@ public:
   bool operator> (const LGGOCXXAddress& b) const;
   bool operator< (const LGGOCXXAddress& b) const;
   
-  LGGOCXXSharedType getType (void) {
+  LGGOCXXType * getType (void) {
     return type;
   }
   
-  void setType (const LGGOCXXSharedType& T) {
+  void setType (LGGOCXXType *T) {
     type = T;
   }
   
@@ -94,20 +94,20 @@ public:
   explicit LGGOCXXSharedAddress(const LGGOCXXWeakAddress& A);
   LGGOCXXSharedAddress(const LGGOCXXSharedAddress& A);
   LGGOCXXSharedAddress(const LGGOCXXSharedStoreContext& C, uint64_t A);
-  LGGOCXXSharedAddress(const LGGOCXXSharedStoreContext& C, const LGGOCXXSharedType &T);
+  LGGOCXXSharedAddress(const LGGOCXXSharedStoreContext& C, LGGOCXXType *T);
   LGGOCXXSharedAddress(void);
   ~LGGOCXXSharedAddress(void);
   
   const LGGOCXXSharedStoreContext& getContext(void);
   uint64_t getAddressValue(void);
   
-  LGGOCXXSharedType getType (void);
+  LGGOCXXType * getType (void);
   
-  void setType (const LGGOCXXSharedType& T);
+  void setType (LGGOCXXType *T);
   bool isValid (void);
   
-  LGGOCXXSharedType operator* (void) const;
-  LGGOCXXSharedType operator-> (void) const;
+  LGGOCXXType * operator* (void) const;
+  LGGOCXXType * operator-> (void) const;
   
   LGGOCXXSharedAddress& operator= (const LGGOCXXSharedAddress& A);
   

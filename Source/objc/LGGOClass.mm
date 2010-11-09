@@ -54,8 +54,7 @@
 	self = [super init];
   
   if (self) {
-    LGGOCXXSharedType type(new LGGOCXXClass(std::string(name_.UTF8String)));
-    address = LGGOCXXSharedAddress(context_.CXXContext, type);
+    address = LGGOCXXSharedAddress(context_.CXXContext, new LGGOCXXClass(std::string(name_.UTF8String)));
     graphContext = [context_ retain];
     address->setNativeObject(self);
   }

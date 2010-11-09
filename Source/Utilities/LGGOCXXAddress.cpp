@@ -54,7 +54,7 @@
 #pragma mark -
 #pragma mark Control Block Implementation
 
-LGGOCXXAddress::LGGOCXXAddress(const LGGOCXXSharedStoreContext& C, const LGGOCXXSharedType &T)
+LGGOCXXAddress::LGGOCXXAddress(const LGGOCXXSharedStoreContext& C, LGGOCXXType *T)
     : context(C), strongRefCount(0), weakRefCount(0), type(T) {
   //Weak declare this weakAddr at top of scope to guarantee the addr is not deleted during setup
   LGGOCXXWeakAddress weakAddr(this);
@@ -65,7 +65,7 @@ LGGOCXXAddress::LGGOCXXAddress(const LGGOCXXSharedStoreContext& C, const LGGOCXX
   assert(type->getAddress().getAddressValue() == address);
 }
 
-LGGOCXXAddress::LGGOCXXAddress(const LGGOCXXSharedStoreContext& C, const LGGOCXXSharedType &T, uint64_t A)
+LGGOCXXAddress::LGGOCXXAddress(const LGGOCXXSharedStoreContext& C, LGGOCXXType *T, uint64_t A)
     : context(C), strongRefCount(0), weakRefCount(0), type(T), address(A) {
   //Weak declare this weakAddr at top of scope to guarantee the addr is not deleted during setup
   LGGOCXXWeakAddress weakAddr(this);
@@ -180,7 +180,7 @@ LGGOCXXSharedAddress::LGGOCXXSharedAddress(const LGGOCXXSharedStoreContext& C, u
   //printf("Create 0x%llx strong address\n", address->getAddressValue());
 }
 
-LGGOCXXSharedAddress::LGGOCXXSharedAddress(const LGGOCXXSharedStoreContext& C, const LGGOCXXSharedType &T) {
+LGGOCXXSharedAddress::LGGOCXXSharedAddress(const LGGOCXXSharedStoreContext& C, LGGOCXXType *T) {
   uint64_t tagValue = T->getTagValue();
   
   if (tagValue) {
@@ -215,12 +215,12 @@ uint64_t LGGOCXXSharedAddress::getAddressValue(void) {
   return address->getAddressValue();
 }
 
-LGGOCXXSharedType LGGOCXXSharedAddress::getType (void) {
+LGGOCXXType *LGGOCXXSharedAddress::getType (void) {
   assert(address != NULL);
   return address->getType();
 }
 
-void LGGOCXXSharedAddress::setType (const LGGOCXXSharedType& T) {
+void LGGOCXXSharedAddress::setType (LGGOCXXType *T) {
   assert(address != NULL);
   address->setType(T);
 }
@@ -229,12 +229,12 @@ bool LGGOCXXSharedAddress::isValid (void) {
   return (address != NULL);
 }
 
-LGGOCXXSharedType LGGOCXXSharedAddress::operator* (void) const {
+LGGOCXXType *LGGOCXXSharedAddress::operator* (void) const {
   assert(address != NULL);
   return address->getType();
 }
 
-LGGOCXXSharedType LGGOCXXSharedAddress::operator-> (void) const {
+LGGOCXXType *LGGOCXXSharedAddress::operator-> (void) const {
   assert(address != NULL);
   return address->getType();
 }
