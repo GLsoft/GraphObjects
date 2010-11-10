@@ -54,8 +54,6 @@ public:
 
   virtual uint64_t getTagValue (void);
   virtual LGGOCXXSharedMemoryDescriptor getSerializedData (void);
-  virtual bool isDirty(void);
-  virtual bool isDusty(void);
 };
 
 #endif

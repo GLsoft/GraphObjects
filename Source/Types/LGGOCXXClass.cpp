@@ -23,7 +23,7 @@
 
 #include "LGGOCXXClass.h"
 
-LGGOCXXClass::LGGOCXXClass(std::string N) : LGGOCXXType(), name(N), dirty(true) {
+LGGOCXXClass::LGGOCXXClass(std::string N) : LGGOCXXType(), name(N) {
 
 }
 
@@ -124,12 +124,4 @@ uint64_t LGGOCXXClass::getTagValue (void) {
 
 LGGOCXXSharedMemoryDescriptor LGGOCXXClass::getSerializedData (void) {
   return NULL_DESCRIPTOR;
-}
-
-bool LGGOCXXClass::isDusty (void) {
-  return false;
-}
-
-bool LGGOCXXClass::isDirty (void) {
-  return dirty;
 }

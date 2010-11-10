@@ -52,6 +52,8 @@ private:
   LGGOCXXType *type;
   uint32_t strongRefCount;
   uint32_t weakRefCount;
+  bool dirty:1;
+  bool dusty:1;
 public:
   explicit LGGOCXXAddress(const LGGOCXXSharedStoreContext& C, LGGOCXXType *T, uint64_t A);
   explicit LGGOCXXAddress(const LGGOCXXSharedStoreContext& C, LGGOCXXType *T);
@@ -75,18 +77,17 @@ public:
   bool operator> (const LGGOCXXAddress& b) const;
   bool operator< (const LGGOCXXAddress& b) const;
   
-  LGGOCXXType * getType (void) {
-    return type;
-  }
+  LGGOCXXType * getType (void);
+  void setType (LGGOCXXType *T);
   
-  void setType (LGGOCXXType *T) {
-    type = T;
-  }
+  bool getDirty (void);
+  void setDirty (bool D);
+  bool getDusty (void);
+  void setDusty (bool D);
   
   friend class LGGOCXXSharedAddress;
   friend class LGGOCXXWeakAddress;
 };
-
 class LGGOCXXSharedAddress {
 private:
   LGGOCXXAddress *address;
@@ -97,6 +98,12 @@ public:
   LGGOCXXSharedAddress(const LGGOCXXSharedStoreContext& C, LGGOCXXType *T);
   LGGOCXXSharedAddress(void);
   ~LGGOCXXSharedAddress(void);
+  
+  bool getDirty (void);
+  void setDirty (bool D);
+  bool getDusty (void);
+  void setDusty (bool D);
+  
   
   const LGGOCXXSharedStoreContext& getContext(void);
   uint64_t getAddressValue(void);
@@ -123,6 +130,11 @@ public:
   explicit LGGOCXXWeakAddress(LGGOCXXAddress *A);
   LGGOCXXWeakAddress(const LGGOCXXWeakAddress&A);
   ~LGGOCXXWeakAddress(void);
+  
+  bool getDirty (void);
+  void setDirty (bool D);
+  bool getDusty (void);
+  void setDusty (bool D);
     
   const LGGOCXXSharedStoreContext& getContext(void);
   uint64_t getAddressValue(void);
@@ -132,5 +144,8 @@ public:
   
   friend class LGGOCXXSharedAddress;
 };
+
+
+
 
 #endif

@@ -27,7 +27,7 @@
 #define LGGO_MAX_INT59 ((int64_t)0x03ffffffffffffff)
 #define LGGO_MIN_INT59 ((int64_t)(-1*LGGO_MAX_INT59))
 
-LGGOCXXNumber::LGGOCXXNumber(int64_t N) : LGGOCXXType(), dirty(true), rawValue(N) {
+LGGOCXXNumber::LGGOCXXNumber(int64_t N) : LGGOCXXType(), rawValue(N) {
   rawValue = *((uint64_t *)&N);
   
   if (N >= 0) {
@@ -86,14 +86,6 @@ uint64_t LGGOCXXNumber::getTagValue (void) {
 
 LGGOCXXSharedMemoryDescriptor LGGOCXXNumber::getSerializedData(void) {
   return NULL_DESCRIPTOR;
-}
-
-bool LGGOCXXNumber::isDirty(void) {
-  return dirty;
-}
-
-bool LGGOCXXNumber::isDusty(void) {
-  return false;
 }
 
 int64_t LGGOCXXNumber::signedValue (void) {

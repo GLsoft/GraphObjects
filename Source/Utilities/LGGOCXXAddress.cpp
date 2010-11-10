@@ -55,7 +55,7 @@
 #pragma mark Control Block Implementation
 
 LGGOCXXAddress::LGGOCXXAddress(const LGGOCXXSharedStoreContext& C, LGGOCXXType *T)
-    : context(C), strongRefCount(0), weakRefCount(0), type(T) {
+    : context(C), strongRefCount(0), weakRefCount(0), dirty(false), dusty(false), type(T) {
   //Weak declare this weakAddr at top of scope to guarantee the addr is not deleted during setup
   LGGOCXXWeakAddress weakAddr(this);
   T->setAddress(weakAddr);
@@ -66,7 +66,7 @@ LGGOCXXAddress::LGGOCXXAddress(const LGGOCXXSharedStoreContext& C, LGGOCXXType *
 }
 
 LGGOCXXAddress::LGGOCXXAddress(const LGGOCXXSharedStoreContext& C, LGGOCXXType *T, uint64_t A)
-    : context(C), strongRefCount(0), weakRefCount(0), type(T), address(A) {
+    : context(C), strongRefCount(0), weakRefCount(0), dirty(false), dusty(false), type(T), address(A) {
   //Weak declare this weakAddr at top of scope to guarantee the addr is not deleted during setup
   LGGOCXXWeakAddress weakAddr(this);
   T->setAddress(weakAddr);
@@ -146,6 +146,46 @@ bool LGGOCXXAddress::operator< (const LGGOCXXAddress& b) const {
 
 const LGGOCXXSharedStoreContext& LGGOCXXAddress::getContext(void) {
   return context;
+}
+
+LGGOCXXType * LGGOCXXAddress::getType (void) {
+  return type;
+}
+
+void LGGOCXXAddress::setType (LGGOCXXType *T) {
+  type = T;
+}
+
+bool LGGOCXXAddress::getDirty (void) {
+  return dirty;
+}
+
+void LGGOCXXAddress::setDirty (bool D) {
+  dirty = D;
+}
+
+bool LGGOCXXAddress::getDusty (void) {
+  return dusty;
+}
+
+void LGGOCXXAddress::setDusty (bool D) {
+  dusty = D;
+}
+
+bool LGGOCXXSharedAddress::getDirty (void) {
+  return address->getDirty();
+}
+
+void LGGOCXXSharedAddress::setDirty (bool D) {
+  address->setDirty(D);
+}
+
+bool LGGOCXXSharedAddress::getDusty (void) {
+  return address->getDusty();
+}
+
+void LGGOCXXSharedAddress::setDusty (bool D) {
+  address->setDusty(D);
 }
 
 #pragma mark -
@@ -307,3 +347,18 @@ LGGOCXXWeakAddress& LGGOCXXWeakAddress::operator= (const LGGOCXXWeakAddress& A) 
   return *this;
 }
 
+bool LGGOCXXWeakAddress::getDirty (void) {
+  return address->getDirty();
+}
+
+void LGGOCXXWeakAddress::setDirty (bool D) {
+  address->setDirty(D);
+}
+
+bool LGGOCXXWeakAddress::getDusty (void) {
+  return address->getDusty();
+}
+
+void LGGOCXXWeakAddress::setDusty (bool D) {
+  address->setDusty(D);
+}

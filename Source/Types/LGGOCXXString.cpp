@@ -28,7 +28,7 @@
 #include "utf8.h"
 
 LGGOCXXString::LGGOCXXString(std::string S)
-  : LGGOCXXType(), charLength(0), lengthCalculated(false), dirty(true) {
+  : LGGOCXXType(), charLength(0), lengthCalculated(false) {
   byteLength = S.size();
 
   if(byteLength <= 7) {
@@ -60,15 +60,6 @@ uint64_t LGGOCXXString::getTagValue (void) {
   }
   
   return retval;
-}
-
-
-bool LGGOCXXString::isDirty(void) {
-  return dirty;
-}
-
-bool LGGOCXXString::isDusty(void) {
-  return false;
 }
 
 uint32_t LGGOCXXString::getLength(void) {

@@ -83,8 +83,6 @@ public:
   
   virtual LGGOCXXSharedMemoryDescriptor getSerializedData (void) = 0;
   virtual uint64_t getTagValue (void) = 0;
-  virtual bool isDirty(void) = 0;
-  virtual bool isDusty(void) = 0;
 };
 
 #endif
