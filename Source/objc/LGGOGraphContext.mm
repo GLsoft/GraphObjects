@@ -21,18 +21,18 @@
  */
 
 #include "LGGOCXXStoreContext.h"
-#include "LGGOCXXString.h"
-#include "LGGOCXXNumber.h"
-#include "LGGOCXXHackArray.h"
+#include "LGGOCXXStringRef.h"
+#include "LGGOCXXNumberRef.h"
+#include "LGGOCXXHackArrayRef.h"
 
 #import "LGGOGraphContext.h"
 #import "LGGOString.h"
 #import "LGGONumber.h"
 #import "LGGOMutableArray.h"
 
-@protocol LGGOCXXSharedAddress
+@protocol LGGOCXXSharedReference
 
-@property (nonatomic, readonly) LGGOCXXSharedAddress address;
+@property (nonatomic, readonly) LGGOCXXSharedReference address;
 
 @end
 
@@ -65,21 +65,21 @@
 // This function returns a graph object from a normal object. It will grab the underlying
 // graph object, or make one (without an attached native object) if necessary.
 
-- (id) transmuteToNativeObject:(LGGOCXXSharedAddress)address {
+- (id) transmuteToNativeObject:(LGGOCXXSharedReference)address {
   id retval = (id)(*address)->getNativeObject();
   
   if (!retval) {
-    LGGOCXXHackArray *lggoArray = dynamic_cast<LGGOCXXHackArray *>(*address);
+    LGGOCXXHackArrayRef *lggoArray = dynamic_cast<LGGOCXXHackArrayRef *>(*address);
     if (lggoArray) {
       return [[[LGGOMutableArray alloc] initWithGraphObject:address inContext:self] autorelease];
     }
     
-    LGGOCXXString *lggoString = dynamic_cast<LGGOCXXString *>(*address);
+    LGGOCXXStringRef *lggoString = dynamic_cast<LGGOCXXStringRef *>(*address);
     if (lggoString) {
       return [[[LGGOString alloc] initWithGraphObject:address inContext:self] autorelease];
     }
     
-    LGGOCXXNumber *lggoNumber = dynamic_cast<LGGOCXXNumber *>(*address);
+    LGGOCXXNumberRef *lggoNumber = dynamic_cast<LGGOCXXNumberRef *>(*address);
     if (lggoNumber) {
       return [[[LGGONumber alloc] initWithGraphObject:address inContext:self] autorelease];
     }
@@ -88,27 +88,26 @@
   return retval;
 }
 
-- (LGGOCXXSharedAddress) transmuteToGraphObject:(id)object {
-  LGGOCXXSharedAddress retval;
+- (LGGOCXXSharedReference) transmuteToGraphObject:(id)object {
+  LGGOCXXSharedReference retval;
   
   if ([object respondsToSelector:@selector(address)]) {
-    id<LGGOCXXSharedAddress> lggoObject = object;
+    id<LGGOCXXSharedReference> lggoObject = object;
     retval = [lggoObject address];
     retval->setNativeObject(object);
   } else if ([object isKindOfClass:[NSString class]]) {
     NSString *string = object;
-    retval = LGGOCXXSharedAddress(self.CXXContext, new LGGOCXXString(string.UTF8String));
+    retval = LGGOCXXStringRef::create(self.CXXContext, string.UTF8String);
     retval->setNativeObject(object);
   } else if ([object isKindOfClass:[NSNumber class]]) {
     //FIXME this needs improvement for floats
     NSNumber *number = object;
-    LGGOCXXSharedAddress temp(self.CXXContext, new LGGOCXXNumber(number.longLongValue));
-    retval = temp;
+    retval = LGGOCXXNumberRef::create(self.CXXContext, number.longLongValue);
     retval->setNativeObject(object);
   } else if ([object isKindOfClass:[NSArray class]]) {
     NSArray *array = object;
-    retval = LGGOCXXSharedAddress(self.CXXContext, new LGGOCXXHackArray());
-    LGGOCXXHackArray *lggoArray = dynamic_cast<LGGOCXXHackArray *>(*retval);
+    retval = LGGOCXXHackArrayRef::create(self.CXXContext);
+    LGGOCXXHackArrayRef *lggoArray = dynamic_cast<LGGOCXXHackArrayRef *>(*retval);
     [array enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
       lggoArray->addObject([self transmuteToGraphObject:obj]);
     }];

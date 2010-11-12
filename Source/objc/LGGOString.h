@@ -27,6 +27,6 @@
 
 - (id) initWithString:(NSString *)string_ inContext:(LGGOGraphContext *)context_;
 #if defined __cplusplus
-- (id)initWithGraphObject:(const LGGOCXXSharedAddress &)graphObject inContext:(LGGOGraphContext *)context_;
+- (id)initWithGraphObject:(const LGGOCXXSharedReference &)graphObject inContext:(LGGOGraphContext *)context_;
 #endif
 @end

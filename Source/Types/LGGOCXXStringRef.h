@@ -21,37 +21,40 @@
  */
 
 
-#ifndef LGGOCXXCLASS_H
-#define LGGOCXXCLASS_H
+#ifndef LGGOCXXSTRINGREF_H
+#define LGGOCXXSTRINGREF_H
 
-#include <map>
-#include <tr1/tuple>
+// Encoding
+// bits 0-3 string tag
+// bits 4-7 length in bytes (NOT NULL terminated, if the string exceeds 7 bytes set to 0xff and
+//   and length will be determined by length of descriptor
+// bits 8+ NON-NULL terminated string
 
-#include "LGGOCXXType.h"
+// This encoding has the benefit that strings less than 7 bytes can fit inside a tagged pointer,
+// but are also valid in a memory buffer. That means we can use the same code path for them by
+// using LGGOTaggedMemoryDescriptor, which wraps an address and presents it as a memory buffer.
 
-//FIXME we should probably cache property and relationship offsets
+#include <string>
 
-//Encoding and semantics
-typedef std::tr1::tuple<LGGOCXXRelationEncodingType, LGGOCXXRelationSemanticsType> LGGOCXXRelationTuple;
+#include "LGGOCXXReference.h"
 
-class LGGOCXXClass : public LGGOCXXType {
+class LGGOCXXStringRef : public LGGOCXXReference {
 private:
-  std::string name;
-  std::map<std::string, LGGOCXXScalarEncodingType> properties;
-  std::map<std::string, LGGOCXXRelationTuple> relations;
+  LGGOCXXSharedMemoryDescriptor stringDescriptor;
+  uint32_t charLength;
+  uint32_t byteLength;
+  uint8_t offset;
+  bool lengthCalculated:1;
   bool dirty:1;
-public: 
-  explicit LGGOCXXClass(std::string N);
-  void addProperty(std::string name, LGGOCXXScalarEncodingType type);
-  void addRelation(std::string name, LGGOCXXRelationEncodingType type, LGGOCXXRelationSemanticsType semantics);
   
-  LGGOCXXScalarEncodingType getPropertyType(std::string name);
-  uint32_t getPropertyOffset(std::string name);
+  explicit LGGOCXXStringRef(std::string S);
+public:
+  static LGGOCXXSharedReference create(const LGGOCXXSharedStoreContext& C, std::string S);
   
-  LGGOCXXRelationEncodingType getRelationType(std::string name);
-  LGGOCXXRelationSemanticsType getRelationSemantics(std::string name);
-  uint32_t getRelationOffset(std::string name);
-
+  uint32_t getLength(void);
+//  void getCharsInRage(uint16_t *buffer, uint32_t start, uint32_t len);
+  uint16_t getCharacterAtIndex(uint32_t index);
+  
   virtual uint64_t getTagValue (void);
   virtual LGGOCXXSharedMemoryDescriptor getSerializedData (void);
 };

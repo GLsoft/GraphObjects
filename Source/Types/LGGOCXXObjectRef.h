@@ -19,4 +19,14 @@
  THE SOFTWARE.
  
  */
-#include "LGGOCXXObject.h"
+
+#ifndef LGGOCXXOBJECTREF_H
+#define LGGOCXXOBJECTREF_H
+
+#include "LGGOCXXReference.h"
+
+class LGGOCXXObjectRef : LGGOCXXReference {
+  
+};
+
+#endif

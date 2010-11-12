@@ -21,14 +21,18 @@
  */
 
 
-#include "LGGOCXXString.h"
+#include "LGGOCXXStringRef.h"
 
 #include <stdint.h>
 
 #include "utf8.h"
 
-LGGOCXXString::LGGOCXXString(std::string S)
-  : LGGOCXXType(), charLength(0), lengthCalculated(false) {
+LGGOCXXSharedReference LGGOCXXStringRef::create(const LGGOCXXSharedStoreContext& C, std::string S) {
+  return LGGOCXXSharedReference (C, new LGGOCXXStringRef(S));
+}
+   
+LGGOCXXStringRef::LGGOCXXStringRef(std::string S)
+  : LGGOCXXReference(), charLength(0), lengthCalculated(false) {
   byteLength = S.size();
 
   if(byteLength <= 7) {
@@ -52,7 +56,7 @@ LGGOCXXString::LGGOCXXString(std::string S)
   }
 }
 
-uint64_t LGGOCXXString::getTagValue (void) {
+uint64_t LGGOCXXStringRef::getTagValue (void) {
   uint64_t retval = 0;
   
   if (byteLength <= 7) {
@@ -62,7 +66,7 @@ uint64_t LGGOCXXString::getTagValue (void) {
   return retval;
 }
 
-uint32_t LGGOCXXString::getLength(void) {
+uint32_t LGGOCXXStringRef::getLength(void) {
   if (lengthCalculated == false) {
     LGGOCXXCoreMemoryDescriptor::iterator i = stringDescriptor->begin()+1;
 
@@ -80,7 +84,7 @@ uint32_t LGGOCXXString::getLength(void) {
   return charLength;
 }
 
-uint16_t LGGOCXXString::getCharacterAtIndex(uint32_t index) {
+uint16_t LGGOCXXStringRef::getCharacterAtIndex(uint32_t index) {
   uint16_t retval = 0;
   
   LGGOCXXCoreMemoryDescriptor::iterator i = stringDescriptor->begin()+1;
@@ -112,6 +116,6 @@ uint16_t LGGOCXXString::getCharacterAtIndex(uint32_t index) {
   return retval;
 }
 
-LGGOCXXSharedMemoryDescriptor LGGOCXXString::getSerializedData (void) {
+LGGOCXXSharedMemoryDescriptor LGGOCXXStringRef::getSerializedData (void) {
   return stringDescriptor;
 }

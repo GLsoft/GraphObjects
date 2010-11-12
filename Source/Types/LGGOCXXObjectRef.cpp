@@ -19,44 +19,4 @@
  THE SOFTWARE.
  
  */
-
-
-#ifndef LGGOCXXNUMBER_H
-#define LGGOCXXNUMBER_H
-
-#include "LGGOCXXType.h"
-
-// Encoding
-// bits 0-3 number tag
-// bits 4 subtype encoding (0 integer, 1 double) float
-// bits 5-62 58 bit postiive integer (NOT 2's complement this is a magnitude)
-// bit 63 sign bit
-
-// float/double encodings are currently undefined
-// Encoding that do not fit within a tagged pointer are currently not supported
-
-typedef enum {
-  LGGOCXXIntegerTypeEncoding = 0,
-  LGGOCXXUnsignedFloatTypEncodinge = 1
-} LGGOCXXNumberEncodingType;
-
-class LGGOCXXNumber : public LGGOCXXType {
-private:
-  uint64_t rawValue;
-  LGGOCXXSharedMemoryDescriptor descriptor;
-  LGGOCXXScalarEncodingType type;
-  bool dirty:1;
-public:
-  explicit LGGOCXXNumber(int64_t N);
-  
-  LGGOCXXScalarEncodingType getType(void);
-  int64_t signedValue (void);
-  uint64_t unsignedValue (void);
-  float floatValue(void);
-  double doubleValue(void);
-
-  virtual uint64_t getTagValue (void);
-  virtual LGGOCXXSharedMemoryDescriptor getSerializedData (void);
-};
-
-#endif
+#include "LGGOCXXObjectRef.h"

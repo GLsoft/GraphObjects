@@ -24,7 +24,7 @@
 
 #include <tr1/memory>
 
-#include "LGGOCXXAddress.h"
+#include "LGGOCXXReferenceMetadata.h"
 
 #include <execinfo.h>
 #include <stdio.h>
@@ -54,56 +54,56 @@
 #pragma mark -
 #pragma mark Control Block Implementation
 
-LGGOCXXAddress::LGGOCXXAddress(const LGGOCXXSharedStoreContext& C, LGGOCXXType *T)
+LGGOCXXReferenceMetadata::LGGOCXXReferenceMetadata(const LGGOCXXSharedStoreContext& C, LGGOCXXReference *T)
     : context(C), strongRefCount(0), weakRefCount(0), dirty(false), dusty(false), type(T) {
   //Weak declare this weakAddr at top of scope to guarantee the addr is not deleted during setup
-  LGGOCXXWeakAddress weakAddr(this);
+  LGGOCXXWeakReference weakAddr(this);
   T->setAddress(weakAddr);
   address = context->getNextFreeAddress();
-  context->setAddressForAddressValue(LGGOCXXWeakAddress(this), address);
+  context->setAddressForAddressValue(LGGOCXXWeakReference(this), address);
   LG_LOG("Create 0x%llx real address\n", getAddressValue());
   assert(type->getAddress().getAddressValue() == address);
 }
 
-LGGOCXXAddress::LGGOCXXAddress(const LGGOCXXSharedStoreContext& C, LGGOCXXType *T, uint64_t A)
+LGGOCXXReferenceMetadata::LGGOCXXReferenceMetadata(const LGGOCXXSharedStoreContext& C, LGGOCXXReference *T, uint64_t A)
     : context(C), strongRefCount(0), weakRefCount(0), dirty(false), dusty(false), type(T), address(A) {
   //Weak declare this weakAddr at top of scope to guarantee the addr is not deleted during setup
-  LGGOCXXWeakAddress weakAddr(this);
+  LGGOCXXWeakReference weakAddr(this);
   T->setAddress(weakAddr);
-  context->setAddressForAddressValue(LGGOCXXWeakAddress(this), address);
+  context->setAddressForAddressValue(LGGOCXXWeakReference(this), address);
   LG_LOG("Create 0x%llx real address\n", getAddressValue());
   assert(type->getAddress().getAddressValue() == address);
   assert(type->getAddress().getAddressValue() == A);
 }
 
-const uint64_t LGGOCXXAddress::getAddressValue (void) {
+const uint64_t LGGOCXXReferenceMetadata::getAddressValue (void) {
   return address;
 }
   
-const LGGOSimpleType LGGOCXXAddress::getType (void) const {
+const LGGOSimpleType LGGOCXXReferenceMetadata::getType (void) const {
   return static_cast<LGGOSimpleType>(address | (uint64_t)0x00ff);
 }
 
-const bool LGGOCXXAddress::isNative (void) const {
+const bool LGGOCXXReferenceMetadata::isNative (void) const {
   return ((address | (uint64_t)0x00ff) == kLGGOAddressNativeType);
 }
 
-const bool LGGOCXXAddress::isValid (void) const {
+const bool LGGOCXXReferenceMetadata::isValid (void) const {
   return address != 0;
 }
   
   
-uint64_t LGGOCXXAddress::getConcreteAddressValue (void) const {
+uint64_t LGGOCXXReferenceMetadata::getConcreteAddressValue (void) const {
   return address;
 }
   
-void LGGOCXXAddress::incrementStrongCount (void) {
+void LGGOCXXReferenceMetadata::incrementStrongCount (void) {
   LG_LOG("Counts:%u/%u 0x%lx\n", strongRefCount, weakRefCount, (uintptr_t)this);
   LG_BACKTRACE();
   strongRefCount++;
 }
   
-void LGGOCXXAddress::decrementStrongCount (void) {
+void LGGOCXXReferenceMetadata::decrementStrongCount (void) {
   LG_LOG("Counts:%u/%u 0x%lx\n", strongRefCount, weakRefCount, (uintptr_t)this);
   LG_BACKTRACE();
   assert(strongRefCount > 0);
@@ -114,13 +114,13 @@ void LGGOCXXAddress::decrementStrongCount (void) {
   }
 }
   
-void LGGOCXXAddress::incrementWeakCount (void) {
+void LGGOCXXReferenceMetadata::incrementWeakCount (void) {
   LG_LOG("Counts:%u/%u 0x%lx\n", strongRefCount, weakRefCount, (uintptr_t)this);
   LG_BACKTRACE();
   weakRefCount++;
 }
   
-void LGGOCXXAddress::decrementWeakCount (void) {
+void LGGOCXXReferenceMetadata::decrementWeakCount (void) {
   LG_LOG("Counts:%u/%u 0x%lx\n", strongRefCount, weakRefCount, (uintptr_t)this);
   LG_BACKTRACE();
   assert(weakRefCount > 0);
@@ -132,84 +132,84 @@ void LGGOCXXAddress::decrementWeakCount (void) {
 }
   
   
-bool LGGOCXXAddress::operator== (const LGGOCXXAddress& A) {
+bool LGGOCXXReferenceMetadata::operator== (const LGGOCXXReferenceMetadata& A) {
   return (address == A.address);
 }
   
-bool LGGOCXXAddress::operator> (const LGGOCXXAddress& b) const {
+bool LGGOCXXReferenceMetadata::operator> (const LGGOCXXReferenceMetadata& b) const {
   return address > b.address;
 }
   
-bool LGGOCXXAddress::operator< (const LGGOCXXAddress& b) const {
+bool LGGOCXXReferenceMetadata::operator< (const LGGOCXXReferenceMetadata& b) const {
   return address < b.address;
 }
 
-const LGGOCXXSharedStoreContext& LGGOCXXAddress::getContext(void) {
+const LGGOCXXSharedStoreContext& LGGOCXXReferenceMetadata::getContext(void) {
   return context;
 }
 
-LGGOCXXType * LGGOCXXAddress::getType (void) {
+LGGOCXXReference * LGGOCXXReferenceMetadata::getType (void) {
   return type;
 }
 
-void LGGOCXXAddress::setType (LGGOCXXType *T) {
+void LGGOCXXReferenceMetadata::setType (LGGOCXXReference *T) {
   type = T;
 }
 
-bool LGGOCXXAddress::getDirty (void) {
+bool LGGOCXXReferenceMetadata::getDirty (void) {
   return dirty;
 }
 
-void LGGOCXXAddress::setDirty (bool D) {
+void LGGOCXXReferenceMetadata::setDirty (bool D) {
   dirty = D;
 }
 
-bool LGGOCXXAddress::getDusty (void) {
+bool LGGOCXXReferenceMetadata::getDusty (void) {
   return dusty;
 }
 
-void LGGOCXXAddress::setDusty (bool D) {
+void LGGOCXXReferenceMetadata::setDusty (bool D) {
   dusty = D;
 }
 
-bool LGGOCXXSharedAddress::getDirty (void) {
+bool LGGOCXXSharedReference::getDirty (void) {
   return address->getDirty();
 }
 
-void LGGOCXXSharedAddress::setDirty (bool D) {
+void LGGOCXXSharedReference::setDirty (bool D) {
   address->setDirty(D);
 }
 
-bool LGGOCXXSharedAddress::getDusty (void) {
+bool LGGOCXXSharedReference::getDusty (void) {
   return address->getDusty();
 }
 
-void LGGOCXXSharedAddress::setDusty (bool D) {
+void LGGOCXXSharedReference::setDusty (bool D) {
   address->setDusty(D);
 }
 
 #pragma mark -
 #pragma mark Strong Pointer Implementation
 
-LGGOCXXSharedAddress::LGGOCXXSharedAddress(void) : address(NULL) {
+LGGOCXXSharedReference::LGGOCXXSharedReference(void) : address(NULL) {
   //printf("Create NULL strong address\n");
 }
 
-LGGOCXXSharedAddress::LGGOCXXSharedAddress(const LGGOCXXWeakAddress& A) : address(A.address) {
+LGGOCXXSharedReference::LGGOCXXSharedReference(const LGGOCXXWeakReference& A) : address(A.address) {
   if (address) {
     address->incrementStrongCount();
   }
 }
   
-LGGOCXXSharedAddress::LGGOCXXSharedAddress(const LGGOCXXSharedAddress& A)  : address(A.address) {
+LGGOCXXSharedReference::LGGOCXXSharedReference(const LGGOCXXSharedReference& A)  : address(A.address) {
   if (address) {
     address->incrementStrongCount();
   }
 }
 
-LGGOCXXSharedAddress::LGGOCXXSharedAddress(const LGGOCXXSharedStoreContext& C, uint64_t A) {
+LGGOCXXSharedReference::LGGOCXXSharedReference(const LGGOCXXSharedStoreContext& C, uint64_t A) {
   assert(A != 0);
-  LGGOCXXSharedAddress existingAddress = C->getAddressForAddressValue(A);
+  LGGOCXXSharedReference existingAddress = C->getAddressForAddressValue(A);
   if (existingAddress.isValid()) {
     address = existingAddress.address;
     address->incrementStrongCount();
@@ -220,66 +220,66 @@ LGGOCXXSharedAddress::LGGOCXXSharedAddress(const LGGOCXXSharedStoreContext& C, u
   //printf("Create 0x%llx strong address\n", address->getAddressValue());
 }
 
-LGGOCXXSharedAddress::LGGOCXXSharedAddress(const LGGOCXXSharedStoreContext& C, LGGOCXXType *T) {
+LGGOCXXSharedReference::LGGOCXXSharedReference(const LGGOCXXSharedStoreContext& C, LGGOCXXReference *T) {
   uint64_t tagValue = T->getTagValue();
   
   if (tagValue) {
-    LGGOCXXSharedAddress existingAddress = C->getAddressForAddressValue(tagValue);
+    LGGOCXXSharedReference existingAddress = C->getAddressForAddressValue(tagValue);
     if (existingAddress.isValid()) {
       address = existingAddress.address;
     } else {
-      address = new LGGOCXXAddress(C, T, tagValue);
+      address = new LGGOCXXReferenceMetadata(C, T, tagValue);
     }
     assert(address->getAddressValue() == tagValue);
     //printf("Create 0x%llx strong address\n", address->getAddressValue());
   } else {
-    address = new LGGOCXXAddress(C, T);
+    address = new LGGOCXXReferenceMetadata(C, T);
   }
   address->incrementStrongCount();
   //printf("Create 0x%llx strong address\n", address->getAddressValue());
 }
 
 
-LGGOCXXSharedAddress::~LGGOCXXSharedAddress(void) {
+LGGOCXXSharedReference::~LGGOCXXSharedReference(void) {
   if (address) {
     address->decrementStrongCount();
   }
 }
 
-const LGGOCXXSharedStoreContext& LGGOCXXSharedAddress::getContext(void) {
+const LGGOCXXSharedStoreContext& LGGOCXXSharedReference::getContext(void) {
   assert(address != NULL);
   return address->getContext();
 }
 
-uint64_t LGGOCXXSharedAddress::getAddressValue(void) {
+uint64_t LGGOCXXSharedReference::getAddressValue(void) {
   return address->getAddressValue();
 }
 
-LGGOCXXType *LGGOCXXSharedAddress::getType (void) {
+LGGOCXXReference *LGGOCXXSharedReference::getType (void) {
   assert(address != NULL);
   return address->getType();
 }
 
-void LGGOCXXSharedAddress::setType (LGGOCXXType *T) {
+void LGGOCXXSharedReference::setType (LGGOCXXReference *T) {
   assert(address != NULL);
   address->setType(T);
 }
 
-bool LGGOCXXSharedAddress::isValid (void) {
+bool LGGOCXXSharedReference::isValid (void) {
   return (address != NULL);
 }
 
-LGGOCXXType *LGGOCXXSharedAddress::operator* (void) const {
+LGGOCXXReference *LGGOCXXSharedReference::operator* (void) const {
   assert(address != NULL);
   return address->getType();
 }
 
-LGGOCXXType *LGGOCXXSharedAddress::operator-> (void) const {
+LGGOCXXReference *LGGOCXXSharedReference::operator-> (void) const {
   assert(address != NULL);
   return address->getType();
 }
 
-LGGOCXXSharedAddress& LGGOCXXSharedAddress::operator= (const LGGOCXXSharedAddress& A) {
+LGGOCXXSharedReference& LGGOCXXSharedReference::operator= (const LGGOCXXSharedReference& A) {
   if (address) {
     address->decrementStrongCount();
   }
@@ -293,11 +293,11 @@ LGGOCXXSharedAddress& LGGOCXXSharedAddress::operator= (const LGGOCXXSharedAddres
 #pragma mark -
 #pragma mark Weak Pointer Implementation
 
-LGGOCXXWeakAddress::LGGOCXXWeakAddress(void) : address(NULL) {
+LGGOCXXWeakReference::LGGOCXXWeakReference(void) : address(NULL) {
 //  printf("Create NULL weak address\n");
 }
 
-LGGOCXXWeakAddress::LGGOCXXWeakAddress(LGGOCXXAddress *A) : address(A) {
+LGGOCXXWeakReference::LGGOCXXWeakReference(LGGOCXXReferenceMetadata *A) : address(A) {
 //  printf("Create 0x%llx weak address\n", A->getAddressValue());
   if (address) {
     address->incrementWeakCount();
@@ -305,38 +305,38 @@ LGGOCXXWeakAddress::LGGOCXXWeakAddress(LGGOCXXAddress *A) : address(A) {
 }
 
 
-LGGOCXXWeakAddress::LGGOCXXWeakAddress(const LGGOCXXWeakAddress& A) : address(A.address) {
+LGGOCXXWeakReference::LGGOCXXWeakReference(const LGGOCXXWeakReference& A) : address(A.address) {
   if (address) {
     address->incrementWeakCount();
   }
 }
   
-LGGOCXXWeakAddress::LGGOCXXWeakAddress(const LGGOCXXSharedAddress& A) : address(A.address) {
+LGGOCXXWeakReference::LGGOCXXWeakReference(const LGGOCXXSharedReference& A) : address(A.address) {
   if (address) {
     address->incrementWeakCount();
   }
 }
 
-LGGOCXXWeakAddress::~LGGOCXXWeakAddress(void) {
+LGGOCXXWeakReference::~LGGOCXXWeakReference(void) {
   if (address) {
     address->decrementWeakCount();
   }
 }
 
-const LGGOCXXSharedStoreContext& LGGOCXXWeakAddress::getContext(void) {
+const LGGOCXXSharedStoreContext& LGGOCXXWeakReference::getContext(void) {
   assert(address != NULL);
   return address->getContext();
 }
 
-uint64_t LGGOCXXWeakAddress::getAddressValue(void) {
+uint64_t LGGOCXXWeakReference::getAddressValue(void) {
   return address->getAddressValue();
 }
 
-bool LGGOCXXWeakAddress::isValid (void) {
+bool LGGOCXXWeakReference::isValid (void) {
   return (address != NULL);
 }
 
-LGGOCXXWeakAddress& LGGOCXXWeakAddress::operator= (const LGGOCXXWeakAddress& A) {
+LGGOCXXWeakReference& LGGOCXXWeakReference::operator= (const LGGOCXXWeakReference& A) {
   if (address) {
     address->decrementWeakCount();
   }
@@ -347,18 +347,18 @@ LGGOCXXWeakAddress& LGGOCXXWeakAddress::operator= (const LGGOCXXWeakAddress& A) 
   return *this;
 }
 
-bool LGGOCXXWeakAddress::getDirty (void) {
+bool LGGOCXXWeakReference::getDirty (void) {
   return address->getDirty();
 }
 
-void LGGOCXXWeakAddress::setDirty (bool D) {
+void LGGOCXXWeakReference::setDirty (bool D) {
   address->setDirty(D);
 }
 
-bool LGGOCXXWeakAddress::getDusty (void) {
+bool LGGOCXXWeakReference::getDusty (void) {
   return address->getDusty();
 }
 
-void LGGOCXXWeakAddress::setDusty (bool D) {
+void LGGOCXXWeakReference::setDusty (bool D) {
   address->setDusty(D);
 }

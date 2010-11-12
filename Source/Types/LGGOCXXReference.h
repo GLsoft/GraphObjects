@@ -22,19 +22,17 @@
 
 #include <tr1/memory>
 
-virtual class LGGOCXXType;
-//typedef std::tr1::shared_ptr<LGGOCXXType> LGGOCXXSharedType;
-//typedef std::tr1::weak_ptr<LGGOCXXType> LGGOCXXWeakType;
+virtual class LGGOCXXReference;
 
-#ifndef LGGOCXXTYPE_H
-#define LGGOCXXTYPE_H
+#ifndef LGGOCXXREFERENCE_H
+#define LGGOCXXREFERENCE_H
 
 #include <string>
 
 #include "LGGOCXXStoreContext.h"
 #include "LGGOCXXMemoryDescriptor.h"
 
-#include "LGGOCXXAddress.h"
+#include "LGGOCXXReferenceMetadata.h"
 
 //FIXME should we support _Bool/c++ bool encoding?
 
@@ -55,26 +53,26 @@ typedef enum {
 } LGGOCXXScalarEncodingType;
 
 typedef enum {
-  kLGGOCXXClassReferenceType = 0,
-  kLGGOCXXClassArrayType = 1,
-  kLGGOCXXClassSetType = 2,
-  kLGGOCXXClassDictionaryType = 3
+  kLGGOCXXClassRefReferenceType = 0,
+  kLGGOCXXClassRefArrayType = 1,
+  kLGGOCXXClassRefSetType = 2,
+  kLGGOCXXClassRefDictionaryType = 3
 } LGGOCXXRelationEncodingType;
 
 typedef enum {
-  kLGGOCXXClassByValueType = 0,
-  kLGGOCXXClassByReferenceType = 1
+  kLGGOCXXClassRefByValueType = 0,
+  kLGGOCXXClassRefByReferenceType = 1
 } LGGOCXXRelationSemanticsType;
 
-class LGGOCXXType {
+class LGGOCXXReference {
 private:
-  LGGOCXXWeakAddress address;
+  LGGOCXXWeakReference address;
   void *clientData;
 public:
-  explicit LGGOCXXType(void);
+  explicit LGGOCXXReference(void);
   
-  LGGOCXXWeakAddress getAddress(void);
-  void setAddress (const LGGOCXXWeakAddress &A);
+  LGGOCXXWeakReference getAddress(void);
+  void setAddress (const LGGOCXXWeakReference &A);
   
   const LGGOCXXSharedStoreContext& getContext(void);
 

@@ -40,7 +40,7 @@ typedef std::tr1::shared_ptr<LGGOCXXBaseStoreSegment> LGGOCXXSharedStoreSegment;
 
 #include <map>
 
-#include "LGGOCXXAddress.h"
+#include "LGGOCXXReferenceMetadata.h"
 #include "LGGOCXXMemoryDescriptor.h"
 
 //FIXME we should seperate pointer and hash lookups to support split storage
@@ -54,7 +54,7 @@ public:
 #if 0
 class LGGOCXXWritableStoreSegment : public LGGOCXXBaseStoreSegment {
 private:
-  std::map<LGGOCXXAddress, LGGOCXXSharedMemoryDescriptor> memoryObjects;  
+  std::map<LGGOCXXReferenceMetadata, LGGOCXXSharedMemoryDescriptor> memoryObjects;  
 protected:
 public:    
   LGGOCXXSharedMemoryDescriptor serializeToMemory(void);

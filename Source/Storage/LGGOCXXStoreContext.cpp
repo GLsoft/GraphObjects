@@ -26,7 +26,7 @@
 
 #include <sstream>
 
-#include "LGGOCXXType.h"
+#include "LGGOCXXReference.h"
 #include "LGGOCXXStore.h"
 #include "LGGOCXXStoreSegment.h"
 #include "LGGOCXXMemoryDescriptor.h"
@@ -71,42 +71,42 @@ void LGGOCXXStoreContext::commit (void) {
   //FIXME we need to use a locking protocol here
 }
 
-LGGOCXXType * LGGOCXXStoreContext::rootObject(void) {
-  LGGOCXXSharedAddress address(getAddress(1<<4));
+LGGOCXXReference * LGGOCXXStoreContext::rootObject(void) {
+  LGGOCXXSharedReference address(getAddress(1<<4));
   return *address;
 }
 
-void LGGOCXXStoreContext::setRootObject(LGGOCXXType *T) {
-  LGGOCXXSharedAddress address(shared_from_this(), 1<<4);
+void LGGOCXXStoreContext::setRootObject(LGGOCXXReference *T) {
+  LGGOCXXSharedReference address(shared_from_this(), 1<<4);
   address.setType(T);
 }
 
-LGGOCXXSharedAddress LGGOCXXStoreContext::getAddress (uint64_t address) {
-  std::map<uint64_t,LGGOCXXWeakAddress>::iterator i = addresses.find(address);
+LGGOCXXSharedReference LGGOCXXStoreContext::getAddress (uint64_t address) {
+  std::map<uint64_t,LGGOCXXWeakReference>::iterator i = addresses.find(address);
   
   if (i == addresses.end()) {
-    return LGGOCXXSharedAddress(i->second);
+    return LGGOCXXSharedReference(i->second);
   } else {
     assert(0);
-    LGGOCXXSharedAddress retval = LGGOCXXSharedAddress(shared_from_this(), address);
-    setAddressForAddressValue(LGGOCXXWeakAddress(retval), address);
+    LGGOCXXSharedReference retval = LGGOCXXSharedReference(shared_from_this(), address);
+    setAddressForAddressValue(LGGOCXXWeakReference(retval), address);
     return retval;
   }
 };
 
-void LGGOCXXStoreContext::setAddressForAddressValue(const LGGOCXXWeakAddress& address, uint64_t addressValue) {
+void LGGOCXXStoreContext::setAddressForAddressValue(const LGGOCXXWeakReference& address, uint64_t addressValue) {
 //   addresses[addressValue] = address;
-  addresses.insert(std::pair<uint64_t, LGGOCXXWeakAddress>(addressValue, address));
+  addresses.insert(std::pair<uint64_t, LGGOCXXWeakReference>(addressValue, address));
 }
 
-LGGOCXXSharedAddress LGGOCXXStoreContext::getAddressForAddressValue(uint64_t addressValue) {
-  std::map<uint64_t,LGGOCXXWeakAddress>::iterator i = addresses.find(addressValue);
+LGGOCXXSharedReference LGGOCXXStoreContext::getAddressForAddressValue(uint64_t addressValue) {
+  std::map<uint64_t,LGGOCXXWeakReference>::iterator i = addresses.find(addressValue);
 
   if (i != addresses.end()) {
-    return LGGOCXXSharedAddress(i->second);
+    return LGGOCXXSharedReference(i->second);
   }
   
-  return LGGOCXXSharedAddress();
+  return LGGOCXXSharedReference();
 }
 
 LGGOCXXSharedMemoryDescriptor LGGOCXXStoreContext::getDescriptorForAddress (uint64_t address) {

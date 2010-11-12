@@ -20,28 +20,28 @@
  
  */
 
-#include "LGGOCXXType.h"
+#include "LGGOCXXReference.h"
 
-LGGOCXXType::LGGOCXXType(void) : clientData(NULL) {
+LGGOCXXReference::LGGOCXXReference(void) : clientData(NULL) {
   
 }
 
-LGGOCXXWeakAddress LGGOCXXType::getAddress(void) {
+LGGOCXXWeakReference LGGOCXXReference::getAddress(void) {
   return address;
 }
 
-void LGGOCXXType::setAddress (const LGGOCXXWeakAddress &A) {
+void LGGOCXXReference::setAddress (const LGGOCXXWeakReference &A) {
   address = A;
 }
 
-void *LGGOCXXType::getNativeObject(void) {
+void *LGGOCXXReference::getNativeObject(void) {
   return clientData;
 }
 
-const LGGOCXXSharedStoreContext &LGGOCXXType::getContext(void) {
+const LGGOCXXSharedStoreContext &LGGOCXXReference::getContext(void) {
   return address.getContext();
 }
 
-void LGGOCXXType::setNativeObject(void *D) {
+void LGGOCXXReference::setNativeObject(void *D) {
   clientData = D;
 }

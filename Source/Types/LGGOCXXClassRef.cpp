@@ -21,23 +21,27 @@
  */
 
 
-#include "LGGOCXXClass.h"
+#include "LGGOCXXClassRef.h"
 
-LGGOCXXClass::LGGOCXXClass(std::string N) : LGGOCXXType(), name(N) {
+LGGOCXXSharedReference LGGOCXXClassRef::create(const LGGOCXXSharedStoreContext& C, std::string S) {
+  return LGGOCXXSharedReference (C, new LGGOCXXClassRef(S));
+}
+
+LGGOCXXClassRef::LGGOCXXClassRef(std::string N) : LGGOCXXReference(), name(N) {
 
 }
 
-void LGGOCXXClass::addProperty(std::string name, LGGOCXXScalarEncodingType type) {
+void LGGOCXXClassRef::addProperty(std::string name, LGGOCXXScalarEncodingType type) {
   assert(relations.count(name) == 0); //While we can structurally support scheme style duality, ObjC can't
   properties[name] = type;
 }
 
-void LGGOCXXClass::addRelation(std::string name, LGGOCXXRelationEncodingType type, LGGOCXXRelationSemanticsType semantics) {
+void LGGOCXXClassRef::addRelation(std::string name, LGGOCXXRelationEncodingType type, LGGOCXXRelationSemanticsType semantics) {
   assert(properties.count(name) == 0); //While we can structurally support scheme style duality, ObjC can't
   relations[name] = LGGOCXXRelationTuple(type, semantics);
 }
 
-LGGOCXXScalarEncodingType LGGOCXXClass::getPropertyType(std::string name) {
+LGGOCXXScalarEncodingType LGGOCXXClassRef::getPropertyType(std::string name) {
   assert(properties.count(name) == 1);
   return properties[name];
 }
@@ -63,14 +67,14 @@ uint8_t typeSize (LGGOCXXScalarEncodingType type) {
   }
 }
 
-uint32_t LGGOCXXClass::getPropertyOffset(std::string name) {
+uint32_t LGGOCXXClassRef::getPropertyOffset(std::string name) {
   assert(properties.count(name) == 1);
   
   LGGOCXXScalarEncodingType type = properties[name];
   uint8_t tSize = ::typeSize(type);
 
   //Properties come after relations
-  uint32_t retval = LGGOCXXADDRESS_SERIALIZED_SIZE*relations.size();
+  uint32_t retval = LGGOCXXReferenceMetadata_SERIALIZED_SIZE*relations.size();
   
   std::map<std::string, LGGOCXXScalarEncodingType>::iterator i;
     
@@ -90,17 +94,17 @@ uint32_t LGGOCXXClass::getPropertyOffset(std::string name) {
   return retval;
 }
 
-LGGOCXXRelationEncodingType LGGOCXXClass::getRelationType(std::string name) {
+LGGOCXXRelationEncodingType LGGOCXXClassRef::getRelationType(std::string name) {
   assert(relations.count(name) == 1);
   return std::tr1::get<0>(relations[name]);
 }
 
-LGGOCXXRelationSemanticsType LGGOCXXClass::getRelationSemantics(std::string name) {
+LGGOCXXRelationSemanticsType LGGOCXXClassRef::getRelationSemantics(std::string name) {
   assert(relations.count(name) == 1);
   return std::tr1::get<1>(relations[name]);
 }
 
-uint32_t LGGOCXXClass::getRelationOffset(std::string name) {
+uint32_t LGGOCXXClassRef::getRelationOffset(std::string name) {
   assert(relations.count(name) == 1);
   uint32_t retval = 0;
   
@@ -118,10 +122,10 @@ uint32_t LGGOCXXClass::getRelationOffset(std::string name) {
   return retval;
 }
 
-uint64_t LGGOCXXClass::getTagValue (void) {
+uint64_t LGGOCXXClassRef::getTagValue (void) {
   return 0;
 }
 
-LGGOCXXSharedMemoryDescriptor LGGOCXXClass::getSerializedData (void) {
+LGGOCXXSharedMemoryDescriptor LGGOCXXClassRef::getSerializedData (void) {
   return NULL_DESCRIPTOR;
 }

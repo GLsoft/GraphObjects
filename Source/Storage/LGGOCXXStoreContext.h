@@ -39,8 +39,8 @@ typedef std::tr1::weak_ptr<LGGOCXXStoreContext> LGGOCXXWeakStoreContext;
 #include "LGGOCXXMemoryDescriptor.h"
 #include "LGGOCXXStore.h"
 #include "LGGOCXXStoreSegment.h"
-#include "LGGOCXXType.h"
-#include "LGGOCXXAddress.h"
+#include "LGGOCXXReference.h"
+#include "LGGOCXXReferenceMetadata.h"
 
 class LGGOCXXWritableStoreSegment;
 
@@ -51,7 +51,7 @@ private:
   std::vector<LGGOCXXSharedStoreSegment> segments;
   uint64_t nextAddressValue;
   
-  std::map<uint64_t,LGGOCXXWeakAddress> addresses;
+  std::map<uint64_t,LGGOCXXWeakReference> addresses;
   //FIXME this should be weak, but without native types that can bump shared_ptrs it needs to be strong for now
 public:
   explicit LGGOCXXStoreContext(const LGGOCXXSharedStore &S);
@@ -59,14 +59,14 @@ public:
   void writeSegment (void);
   void commit (void);
    
-  LGGOCXXType * rootObject(void);
-  void setRootObject(LGGOCXXType *T);
+  LGGOCXXReference * rootObject(void);
+  void setRootObject(LGGOCXXReference *T);
   
-  LGGOCXXSharedAddress getAddress (uint64_t address);
+  LGGOCXXSharedReference getAddress (uint64_t address);
   LGGOCXXSharedMemoryDescriptor getDescriptorForAddress (uint64_t address);
   
-  void setAddressForAddressValue(const LGGOCXXWeakAddress& address, uint64_t addressValue);
-  LGGOCXXSharedAddress getAddressForAddressValue(uint64_t addressValue);
+  void setAddressForAddressValue(const LGGOCXXWeakReference& address, uint64_t addressValue);
+  LGGOCXXSharedReference getAddressForAddressValue(uint64_t addressValue);
 };
 
 #endif

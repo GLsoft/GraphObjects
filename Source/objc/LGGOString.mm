@@ -21,24 +21,24 @@
  */
 
 
-#include "LGGOCXXString.h"
+#include "LGGOCXXStringRef.h"
 
 #import "LGGOGraphContext.h"
 #import "LGGOString.h"
 
 
 @interface LGGOString () {
-  LGGOCXXSharedAddress address;
+  LGGOCXXSharedReference address;
   LGGOGraphContext *graphContext;
 }
 
-@property LGGOCXXSharedAddress address;
+@property LGGOCXXSharedReference address;
 
 @end
 
 @implementation LGGOString
 
-- (id)initWithGraphObject:(const LGGOCXXSharedAddress &)graphObject inContext:(LGGOGraphContext *)context_ {
+- (id)initWithGraphObject:(const LGGOCXXSharedReference &)graphObject inContext:(LGGOGraphContext *)context_ {
 	self = [super init];
   id retval;
   
@@ -64,12 +64,12 @@
   id retval;
   
   if (self) {
-    address = LGGOCXXSharedAddress(context_.CXXContext, new LGGOCXXString(std::string(string_.UTF8String)));
+    address = LGGOCXXStringRef::create(context_.CXXContext, string_.UTF8String);
     
     id existingObject = (id)address->getNativeObject();
     
     if (existingObject) {
-      address = LGGOCXXSharedAddress();
+      address = LGGOCXXSharedReference();
       [self release];
       retval = [existingObject retain];
     } else {
@@ -92,16 +92,16 @@
 }
 
 - (NSUInteger)length {  
-  return dynamic_cast<LGGOCXXString *>(*address)->getLength();
+  return dynamic_cast<LGGOCXXStringRef *>(*address)->getLength();
 }
 
 - (unichar)characterAtIndex:(NSUInteger)index {
-  return dynamic_cast<LGGOCXXString *>(*address)->getCharacterAtIndex(index);
+  return dynamic_cast<LGGOCXXStringRef *>(*address)->getCharacterAtIndex(index);
 }
 
 #if 0
 - (void)getCharacters:(unichar *)buffer range:(NSRange)aRange {
-  std::tr1::dynamic_pointer_cast<LGGOCXXString>(sharedType)->getCharsInRage(buffer, aRange.location, aRange.length);
+  std::tr1::dynamic_pointer_cast<LGGOCXXStringRef>(sharedType)->getCharsInRage(buffer, aRange.location, aRange.length);
 }
 #endif
 

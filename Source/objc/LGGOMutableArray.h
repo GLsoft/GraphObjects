@@ -22,14 +22,14 @@
 #import <Foundation/Foundation.h>
 
 #if defined __cplusplus
-#include "LGGOCXXAddress.h"
-#include "LGGOCXXType.h"
+#include "LGGOCXXReferenceMetadata.h"
+#include "LGGOCXXReference.h"
 #endif
 
 @interface LGGOMutableArray : NSMutableArray
 
 - (id)initInContext:(LGGOGraphContext *)context_;
 #if defined __cplusplus
-- (id)initWithGraphObject:(const LGGOCXXSharedAddress &)graphObject inContext:(LGGOGraphContext *)context_;
+- (id)initWithGraphObject:(const LGGOCXXSharedReference &)graphObject inContext:(LGGOGraphContext *)context_;
 #endif
 @end

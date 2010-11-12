@@ -24,22 +24,22 @@
 #include "LGGOGraphContext.h"
 
 
-#include "LGGOCXXAddress.h"
-#include "LGGOCXXNumber.h"
+#include "LGGOCXXReferenceMetadata.h"
+#include "LGGOCXXNumberRef.h"
 
 #import "LGGONumber.h"
 
 @interface LGGONumber () {
-  LGGOCXXSharedAddress address;
+  LGGOCXXSharedReference address;
   LGGOGraphContext *graphContext;
 }
 
-@property LGGOCXXSharedAddress address;
+@property LGGOCXXSharedReference address;
 @end
 
 @implementation LGGONumber
 
-- (id)initWithGraphObject:(const LGGOCXXSharedAddress &)graphObject inContext:(LGGOGraphContext *)context_ {
+- (id)initWithGraphObject:(const LGGOCXXSharedReference &)graphObject inContext:(LGGOGraphContext *)context_ {
 	self = [super init];
   id retval;
   
@@ -49,7 +49,7 @@
     id existingObject = (id)address->getNativeObject();
     
     if (existingObject) {
-      address = LGGOCXXSharedAddress();
+      address = LGGOCXXSharedReference();
       [self release];
       retval = [existingObject retain];
     } else {
@@ -67,13 +67,13 @@
   id retval;
   
   if (self) {
-    address = LGGOCXXSharedAddress(context_.CXXContext, new LGGOCXXNumber(number_.longLongValue));
+    address = LGGOCXXNumberRef::create(context_.CXXContext, number_.longLongValue);
     
     id existingObject = (id)address->getNativeObject();
     
     if (existingObject) {
       //We do this here so that the when the ObjC runtime destructs the C++ ivar it has an empty object to chew on
-      address = LGGOCXXSharedAddress();
+      address = LGGOCXXSharedReference();
       [self release];
       retval = [existingObject retain];
     } else {
@@ -96,7 +96,7 @@
 }
 
 - (void)getValue:(void *)value_ {
-  LGGOCXXNumber *sharedNumber = dynamic_cast<LGGOCXXNumber *>(*address);
+  LGGOCXXNumberRef *sharedNumber = dynamic_cast<LGGOCXXNumberRef *>(*address);
 	switch(sharedNumber->getType()) {
 		case kLGGOCXX8BitSignedNumberType:
     case kLGGOCXX16BitSignedNumberType:
@@ -119,7 +119,7 @@
 
 #define LGGO_NUMBER_ACCESSOR(datatype, name)                                                \
 - (datatype)name {                                                                          \
-  LGGOCXXNumber *sharedNumber = dynamic_cast<LGGOCXXNumber *>(*address);                    \
+  LGGOCXXNumberRef *sharedNumber = dynamic_cast<LGGOCXXNumberRef *>(*address);                    \
   datatype retval;                                                                          \
   switch(sharedNumber->getType()) {                                                         \
     case kLGGOCXX8BitSignedNumberType :                                                     \
@@ -155,7 +155,7 @@ LGGO_NUMBER_ACCESSOR(NSUInteger, unsignedIntegerValue)
 - (const char *)objCType {
   const char *retval;
   
-  switch(dynamic_cast<LGGOCXXNumber *>(*address)->getType()) {                                                       
+  switch(dynamic_cast<LGGOCXXNumberRef *>(*address)->getType()) {                                                       
     case kLGGOCXX8BitSignedNumberType : retval = "c"; break;
     case kLGGOCXX8BitUnsignedNumberType : retval = "C"; break;
     case kLGGOCXX16BitSignedNumberType : retval = "i"; break;

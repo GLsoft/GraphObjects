@@ -20,24 +20,24 @@
  
  */
 
-#include "LGGOCXXClass.h"
+#include "LGGOCXXClassRef.h"
 
 #import "LGGOGraphContext.h"
 
 #import "LGGOClass.h"
 
 @interface LGGOClass () {
-  LGGOCXXSharedAddress address;
+  LGGOCXXSharedReference address;
   LGGOGraphContext *graphContext;
 }
 
-@property (nonatomic, readonly) LGGOCXXSharedAddress address;
+@property (nonatomic, readonly) LGGOCXXSharedReference address;
 
 @end 
 
 @implementation LGGOClass
 
-- (id)initWithGraphObject:(const LGGOCXXSharedAddress &)graphObject inContext:(LGGOGraphContext *)context_ {
+- (id)initWithGraphObject:(const LGGOCXXSharedReference &)graphObject inContext:(LGGOGraphContext *)context_ {
   self = [super init];
   
   if (self) {
@@ -54,7 +54,7 @@
 	self = [super init];
   
   if (self) {
-    address = LGGOCXXSharedAddress(context_.CXXContext, new LGGOCXXClass(std::string(name_.UTF8String)));
+    address = LGGOCXXClassRef::create(context_.CXXContext, name_.UTF8String);
     graphContext = [context_ retain];
     address->setNativeObject(self);
   }

@@ -20,13 +20,35 @@
  
  */
 
-#ifdef LGGOCXXOBJECT_H
-#define LGGOCXXOBJECT_H
+#include <vector>
 
-#include "LGGOCXXType.h"
+#include "LGGOCXXReference.h"
 
-class LGGOCXXObject : LGGOCXXType {
+class LGGOCXXObjectRef;
+
+//FIXME this should really be an STL compatible interface
+
+// No point in documenting the encoding format
+// 1) It is not implemented
+// 2) This whole class will go away
+
+class LGGOCXXHackArrayRef : public LGGOCXXReference {
+private:
+  std::vector<LGGOCXXWeakReference> objects;  
+  LGGOCXXHackArrayRef(void) : LGGOCXXReference() { }
   
-}
-
-#endif
+public:
+  static LGGOCXXSharedReference create (const LGGOCXXSharedStoreContext& C);
+  
+  uint64_t getCount(void);
+  LGGOCXXSharedReference getObjectAtIndex(uint64_t i);
+  
+  void addObject(const LGGOCXXSharedReference& object);
+  void insertObjectAtIndex(const LGGOCXXSharedReference& object, uint64_t index);
+  void removeLastObject (void);
+  void removeObjectAtIndex(uint64_t index);
+  void replaceObjectAtIndexWithObject(const LGGOCXXSharedReference& object, uint64_t index);
+  
+  virtual uint64_t getTagValue (void);
+  virtual LGGOCXXSharedMemoryDescriptor getSerializedData (void);
+};

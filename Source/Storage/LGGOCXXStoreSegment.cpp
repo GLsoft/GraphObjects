@@ -107,7 +107,7 @@ void LGGOCXXWritableStoreSegment::setDescriptorForAddress(const LGGOCXXSharedMem
 
 LGGOCXXSharedMemoryDescriptor LGGOCXXWritableStoreSegment::getDescriptorForAddress (uint64_t address) {
   LGGOCXXSharedMemoryDescriptor retval;
-  std::map<LGGOCXXAddress,LGGOCXXSharedMemoryDescriptor>::iterator i = memoryObjects.find(address);
+  std::map<LGGOCXXReferenceMetadata,LGGOCXXSharedMemoryDescriptor>::iterator i = memoryObjects.find(address);
   
   if (i != memoryObjects.end()) {
     retval = i->second;
@@ -119,7 +119,7 @@ LGGOCXXSharedMemoryDescriptor LGGOCXXWritableStoreSegment::getDescriptorForAddre
 LGGOCXXSharedMemoryDescriptor LGGOCXXWritableStoreSegment::serializeToMemory(void) {  
   std::map<LGGOCXXSharedStoreHash, LGGOCXXSharedMemoryDescriptor> hashMap;
   std::vector<std::tr1::tuple<uint64_t, uint64_t, LGGOCXXSharedMemoryDescriptor> > compressedDecriptors;
-  std::map<LGGOCXXAddress,LGGOCXXSharedMemoryDescriptor>::iterator i;
+  std::map<LGGOCXXReferenceMetadata,LGGOCXXSharedMemoryDescriptor>::iterator i;
   std::map<LGGOCXXSharedStoreHash, LGGOCXXSharedMemoryDescriptor>::iterator j;
 
 

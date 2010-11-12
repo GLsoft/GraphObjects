@@ -20,36 +20,43 @@
  
  */
 
-#include <vector>
 
-#include "LGGOCXXType.h"
+#ifndef LGGOCXXCLASSREF_H
+#define LGGOCXXCLASSREF_H
 
-class LGGOCXXObject;
+#include <map>
+#include <tr1/tuple>
 
-//FIXME this should really be an STL compatible interface
+#include "LGGOCXXReference.h"
 
-// No point in documenting the encoding format
-// 1) It is not implemented
-// 2) This whole class will go away
+//FIXME we should probably cache property and relationship offsets
 
-class LGGOCXXHackArray : public LGGOCXXType {
+//Encoding and semantics
+typedef std::tr1::tuple<LGGOCXXRelationEncodingType, LGGOCXXRelationSemanticsType> LGGOCXXRelationTuple;
+
+class LGGOCXXClassRef : public LGGOCXXReference {
 private:
-  std::vector<LGGOCXXWeakAddress> objects;
+  std::string name;
+  std::map<std::string, LGGOCXXScalarEncodingType> properties;
+  std::map<std::string, LGGOCXXRelationTuple> relations;
   bool dirty:1;
+  
+  explicit LGGOCXXClassRef(std::string N);
 public:
-  LGGOCXXHackArray(void) : LGGOCXXType(), dirty(true) { }
+  static LGGOCXXSharedReference create(const LGGOCXXSharedStoreContext& C, std::string S);
   
-  uint64_t getCount(void);
-  LGGOCXXSharedAddress getObjectAtIndex(uint64_t i);
+  void addProperty(std::string name, LGGOCXXScalarEncodingType type);
+  void addRelation(std::string name, LGGOCXXRelationEncodingType type, LGGOCXXRelationSemanticsType semantics);
   
-  void addObject(const LGGOCXXSharedAddress& object);
-  void insertObjectAtIndex(const LGGOCXXSharedAddress& object, uint64_t index);
-  void removeLastObject (void);
-  void removeObjectAtIndex(uint64_t index);
-  void replaceObjectAtIndexWithObject(const LGGOCXXSharedAddress& object, uint64_t index);
+  LGGOCXXScalarEncodingType getPropertyType(std::string name);
+  uint32_t getPropertyOffset(std::string name);
   
+  LGGOCXXRelationEncodingType getRelationType(std::string name);
+  LGGOCXXRelationSemanticsType getRelationSemantics(std::string name);
+  uint32_t getRelationOffset(std::string name);
+
   virtual uint64_t getTagValue (void);
   virtual LGGOCXXSharedMemoryDescriptor getSerializedData (void);
-  virtual bool isDirty(void);
-  virtual bool isDusty(void);
 };
+
+#endif

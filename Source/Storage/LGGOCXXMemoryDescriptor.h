@@ -36,7 +36,7 @@ extern LGGOCXXSharedMemoryDescriptor NULL_DESCRIPTOR;
 
 #include <assert.h>
 
-#include "LGGOCXXAddress.h"
+#include "LGGOCXXReferenceMetadata.h"
 #include "LGGOCXXStoreHash.h"
 
 virtual class LGGOCXXCoreMemoryDescriptor : public std::tr1::enable_shared_from_this<LGGOCXXCoreMemoryDescriptor> {

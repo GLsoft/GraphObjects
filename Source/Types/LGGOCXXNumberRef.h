@@ -21,37 +21,43 @@
  */
 
 
-#ifndef LGGOCXXSTRING_H
-#define LGGOCXXSTRING_H
+#ifndef LGGOCXXNUMBERREF_H
+#define LGGOCXXNUMBERREF_H
+
+#include "LGGOCXXReference.h"
 
 // Encoding
-// bits 0-3 string tag
-// bits 4-7 length in bytes (NOT NULL terminated, if the string exceeds 7 bytes set to 0xff and
-//   and length will be determined by length of descriptor
-// bits 8+ NON-NULL terminated string
+// bits 0-3 number tag
+// bits 4 subtype encoding (0 integer, 1 double) float
+// bits 5-62 58 bit postiive integer (NOT 2's complement this is a magnitude)
+// bit 63 sign bit
 
-// This encoding has the benefit that strings less than 7 bytes can fit inside a tagged pointer,
-// but are also valid in a memory buffer. That means we can use the same code path for them by
-// using LGGOTaggedMemoryDescriptor, which wraps an address and presents it as a memory buffer.
+// float/double encodings are currently undefined
+// Encoding that do not fit within a tagged pointer are currently not supported
 
-#include <string>
+typedef enum {
+  LGGOCXXIntegerTypeEncoding = 0,
+  LGGOCXXUnsignedFloatTypEncodinge = 1
+} LGGOCXXNumberRefEncodingType;
 
-#include "LGGOCXXType.h"
-
-class LGGOCXXString : public LGGOCXXType {
+class LGGOCXXNumberRef : public LGGOCXXReference {
 private:
-  LGGOCXXSharedMemoryDescriptor stringDescriptor;
-  uint32_t charLength;
-  uint32_t byteLength;
-  uint8_t offset;
-  bool lengthCalculated:1;
+  uint64_t rawValue;
+  LGGOCXXSharedMemoryDescriptor descriptor;
+  LGGOCXXScalarEncodingType type;
   bool dirty:1;
-public:
-  explicit LGGOCXXString(std::string S);
-  uint32_t getLength(void);
-//  void getCharsInRage(uint16_t *buffer, uint32_t start, uint32_t len);
-  uint16_t getCharacterAtIndex(uint32_t index);
   
+  explicit LGGOCXXNumberRef(int64_t N);
+public:
+  static LGGOCXXSharedReference create(const LGGOCXXSharedStoreContext& C, int64_t N);
+
+  
+  LGGOCXXScalarEncodingType getType(void);
+  int64_t signedValue (void);
+  uint64_t unsignedValue (void);
+  float floatValue(void);
+  double doubleValue(void);
+
   virtual uint64_t getTagValue (void);
   virtual LGGOCXXSharedMemoryDescriptor getSerializedData (void);
 };

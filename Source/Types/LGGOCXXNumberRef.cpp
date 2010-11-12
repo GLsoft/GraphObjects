@@ -20,14 +20,18 @@
  
  */
 
-#include "LGGOCXXNumber.h"
+#include "LGGOCXXNumberRef.h"
 
 #define LGGO_NUMBER_DATAMASK ((uint64_t)0x07ffffffffffffff)
 
 #define LGGO_MAX_INT59 ((int64_t)0x03ffffffffffffff)
 #define LGGO_MIN_INT59 ((int64_t)(-1*LGGO_MAX_INT59))
 
-LGGOCXXNumber::LGGOCXXNumber(int64_t N) : LGGOCXXType(), rawValue(N) {
+LGGOCXXSharedReference LGGOCXXNumberRef::create(const LGGOCXXSharedStoreContext& C, int64_t N) {
+  return LGGOCXXSharedReference (C, new LGGOCXXNumberRef(N));
+}
+
+LGGOCXXNumberRef::LGGOCXXNumberRef(int64_t N) : LGGOCXXReference(), rawValue(N) {
   rawValue = *((uint64_t *)&N);
   
   if (N >= 0) {
@@ -62,11 +66,11 @@ LGGOCXXNumber::LGGOCXXNumber(int64_t N) : LGGOCXXType(), rawValue(N) {
   }
 }
 
-LGGOCXXScalarEncodingType LGGOCXXNumber::getType(void) {
+LGGOCXXScalarEncodingType LGGOCXXNumberRef::getType(void) {
   return type;
 }
 
-uint64_t LGGOCXXNumber::getTagValue (void) {
+uint64_t LGGOCXXNumberRef::getTagValue (void) {
   switch(type) {
     case kLGGOCXX64BitUnsignedNumberType:
     case kLGGOCXX32BitUnsignedNumberType:
@@ -84,24 +88,24 @@ uint64_t LGGOCXXNumber::getTagValue (void) {
   }
 }
 
-LGGOCXXSharedMemoryDescriptor LGGOCXXNumber::getSerializedData(void) {
+LGGOCXXSharedMemoryDescriptor LGGOCXXNumberRef::getSerializedData(void) {
   return NULL_DESCRIPTOR;
 }
 
-int64_t LGGOCXXNumber::signedValue (void) {
+int64_t LGGOCXXNumberRef::signedValue (void) {
   return *((int64_t *)&rawValue);
 }
 
-uint64_t LGGOCXXNumber::unsignedValue (void) {
+uint64_t LGGOCXXNumberRef::unsignedValue (void) {
   return *((uint64_t *)&rawValue);
 }
 
-float LGGOCXXNumber::floatValue(void) {
+float LGGOCXXNumberRef::floatValue(void) {
   assert(0);
   return 0.0;
 }
 
-double LGGOCXXNumber::doubleValue(void) {
+double LGGOCXXNumberRef::doubleValue(void) {
   assert(0);
   return 0.0;
 }

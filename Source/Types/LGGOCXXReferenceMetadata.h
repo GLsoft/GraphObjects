@@ -20,16 +20,16 @@
  
  */
 
-class LGGOCXXSharedAddress;
-class LGGOCXXWeakAddress;
+class LGGOCXXSharedReference;
+class LGGOCXXWeakReference;
 
-#include "LGGOCXXType.h"
+#include "LGGOCXXReference.h"
 #include "LGGOCXXStoreContext.h"
 
-#ifndef LGGOADDRESS_H
-#define LGGOADDRESS_H
+#ifndef LGGOREFERENCEMETADATA_H
+#define LGGOREFERENCEMETADATA_H
 
-#define LGGOCXXADDRESS_SERIALIZED_SIZE (8)
+#define LGGOCXXReferenceMetadata_SERIALIZED_SIZE (8)
 
 typedef enum {
   kLGGOAddressNativeType = 0,
@@ -45,18 +45,18 @@ typedef enum {
 
 //FIXME we can be stupid clever here and half the size by using a union, but it is tricky
 
-class LGGOCXXAddress {
+class LGGOCXXReferenceMetadata {
 private:
   uint64_t address;
   LGGOCXXSharedStoreContext context;
-  LGGOCXXType *type;
+  LGGOCXXReference *type;
   uint32_t strongRefCount;
   uint32_t weakRefCount;
   bool dirty:1;
   bool dusty:1;
 public:
-  explicit LGGOCXXAddress(const LGGOCXXSharedStoreContext& C, LGGOCXXType *T, uint64_t A);
-  explicit LGGOCXXAddress(const LGGOCXXSharedStoreContext& C, LGGOCXXType *T);
+  explicit LGGOCXXReferenceMetadata(const LGGOCXXSharedStoreContext& C, LGGOCXXReference *T, uint64_t A);
+  explicit LGGOCXXReferenceMetadata(const LGGOCXXSharedStoreContext& C, LGGOCXXReference *T);
   const uint64_t getAddressValue (void);
   
   const LGGOSimpleType getType (void) const;
@@ -73,31 +73,31 @@ public:
   
   const LGGOCXXSharedStoreContext& getContext(void);
 
-  bool operator== (const LGGOCXXAddress& A);
-  bool operator> (const LGGOCXXAddress& b) const;
-  bool operator< (const LGGOCXXAddress& b) const;
+  bool operator== (const LGGOCXXReferenceMetadata& A);
+  bool operator> (const LGGOCXXReferenceMetadata& b) const;
+  bool operator< (const LGGOCXXReferenceMetadata& b) const;
   
-  LGGOCXXType * getType (void);
-  void setType (LGGOCXXType *T);
+  LGGOCXXReference * getType (void);
+  void setType (LGGOCXXReference *T);
   
   bool getDirty (void);
   void setDirty (bool D);
   bool getDusty (void);
   void setDusty (bool D);
   
-  friend class LGGOCXXSharedAddress;
-  friend class LGGOCXXWeakAddress;
+  friend class LGGOCXXSharedReference;
+  friend class LGGOCXXWeakReference;
 };
-class LGGOCXXSharedAddress {
+class LGGOCXXSharedReference {
 private:
-  LGGOCXXAddress *address;
+  LGGOCXXReferenceMetadata *address;
 public:
-  explicit LGGOCXXSharedAddress(const LGGOCXXWeakAddress& A);
-  LGGOCXXSharedAddress(const LGGOCXXSharedAddress& A);
-  LGGOCXXSharedAddress(const LGGOCXXSharedStoreContext& C, uint64_t A);
-  LGGOCXXSharedAddress(const LGGOCXXSharedStoreContext& C, LGGOCXXType *T);
-  LGGOCXXSharedAddress(void);
-  ~LGGOCXXSharedAddress(void);
+  explicit LGGOCXXSharedReference(const LGGOCXXWeakReference& A);
+  LGGOCXXSharedReference(const LGGOCXXSharedReference& A);
+  LGGOCXXSharedReference(const LGGOCXXSharedStoreContext& C, uint64_t A);
+  LGGOCXXSharedReference(const LGGOCXXSharedStoreContext& C, LGGOCXXReference *T);
+  LGGOCXXSharedReference(void);
+  ~LGGOCXXSharedReference(void);
   
   bool getDirty (void);
   void setDirty (bool D);
@@ -108,28 +108,28 @@ public:
   const LGGOCXXSharedStoreContext& getContext(void);
   uint64_t getAddressValue(void);
   
-  LGGOCXXType * getType (void);
+  LGGOCXXReference * getType (void);
   
-  void setType (LGGOCXXType *T);
+  void setType (LGGOCXXReference *T);
   bool isValid (void);
   
-  LGGOCXXType * operator* (void) const;
-  LGGOCXXType * operator-> (void) const;
+  LGGOCXXReference * operator* (void) const;
+  LGGOCXXReference * operator-> (void) const;
   
-  LGGOCXXSharedAddress& operator= (const LGGOCXXSharedAddress& A);
+  LGGOCXXSharedReference& operator= (const LGGOCXXSharedReference& A);
   
-  friend class LGGOCXXWeakAddress;
+  friend class LGGOCXXWeakReference;
 };
 
-class LGGOCXXWeakAddress {
+class LGGOCXXWeakReference {
 private:
-  LGGOCXXAddress *address;
+  LGGOCXXReferenceMetadata *address;
 public:
-  LGGOCXXWeakAddress(void);
-  explicit LGGOCXXWeakAddress(const LGGOCXXSharedAddress& A);
-  explicit LGGOCXXWeakAddress(LGGOCXXAddress *A);
-  LGGOCXXWeakAddress(const LGGOCXXWeakAddress&A);
-  ~LGGOCXXWeakAddress(void);
+  LGGOCXXWeakReference(void);
+  explicit LGGOCXXWeakReference(const LGGOCXXSharedReference& A);
+  explicit LGGOCXXWeakReference(LGGOCXXReferenceMetadata *A);
+  LGGOCXXWeakReference(const LGGOCXXWeakReference&A);
+  ~LGGOCXXWeakReference(void);
   
   bool getDirty (void);
   void setDirty (bool D);
@@ -140,9 +140,9 @@ public:
   uint64_t getAddressValue(void);
   bool isValid (void);
   
-  LGGOCXXWeakAddress& operator= (const LGGOCXXWeakAddress& A);
+  LGGOCXXWeakReference& operator= (const LGGOCXXWeakReference& A);
   
-  friend class LGGOCXXSharedAddress;
+  friend class LGGOCXXSharedReference;
 };
 
 
