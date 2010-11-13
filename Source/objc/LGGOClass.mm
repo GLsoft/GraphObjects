@@ -27,11 +27,11 @@
 #import "LGGOClass.h"
 
 @interface LGGOClass () {
-  LGGOCXXSharedReference address;
+  LGGOCXXSharedReference reference;
   LGGOGraphContext *graphContext;
 }
 
-@property (nonatomic, readonly) LGGOCXXSharedReference address;
+@property (nonatomic, readonly) LGGOCXXSharedReference reference;
 
 @end 
 
@@ -41,9 +41,9 @@
   self = [super init];
   
   if (self) {
-    address = graphObject;
+    reference = graphObject;
     graphContext = [context_ retain];
-    address->setNativeObject(self);
+    reference->setNativeObject(self);
   }
   
   return self;
@@ -54,16 +54,21 @@
 	self = [super init];
   
   if (self) {
-    address = LGGOCXXClassRef::create(context_.CXXContext, name_.UTF8String);
+    {
+      //LLVM/Clang 2.8 compiler bug work around
+      LGGOCXXSharedStoreContext context = context_.CXXContext;
+      reference = context->createClass(name_.UTF8String);
+    }
+    
     graphContext = [context_ retain];
-    address->setNativeObject(self);
+    reference->setNativeObject(self);
   }
 	
 	return self;
 }
 
 - (void) dealloc {
-  address->setNativeObject(NULL);
+  reference->setNativeObject(NULL);
   [graphContext release];
   
   [super dealloc];

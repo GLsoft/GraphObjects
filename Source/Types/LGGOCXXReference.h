@@ -66,13 +66,13 @@ typedef enum {
 
 class LGGOCXXReference {
 private:
-  LGGOCXXWeakReference address;
+  LGGOCXXWeakReference metadata;
   void *clientData;
 public:
   explicit LGGOCXXReference(void);
   
-  LGGOCXXWeakReference getAddress(void);
-  void setAddress (const LGGOCXXWeakReference &A);
+  LGGOCXXWeakReference getMetadata(void);
+  void setMetadata (const LGGOCXXWeakReference &R);
   
   const LGGOCXXSharedStoreContext& getContext(void);
 

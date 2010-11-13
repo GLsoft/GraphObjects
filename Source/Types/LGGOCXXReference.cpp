@@ -26,12 +26,12 @@ LGGOCXXReference::LGGOCXXReference(void) : clientData(NULL) {
   
 }
 
-LGGOCXXWeakReference LGGOCXXReference::getAddress(void) {
-  return address;
+LGGOCXXWeakReference LGGOCXXReference::getMetadata(void) {
+  return metadata;
 }
 
-void LGGOCXXReference::setAddress (const LGGOCXXWeakReference &A) {
-  address = A;
+void LGGOCXXReference::setMetadata (const LGGOCXXWeakReference &R) {
+  metadata = R;
 }
 
 void *LGGOCXXReference::getNativeObject(void) {
@@ -39,7 +39,7 @@ void *LGGOCXXReference::getNativeObject(void) {
 }
 
 const LGGOCXXSharedStoreContext &LGGOCXXReference::getContext(void) {
-  return address.getContext();
+  return metadata.getContext();
 }
 
 void LGGOCXXReference::setNativeObject(void *D) {

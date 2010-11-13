@@ -49,10 +49,8 @@ private:
   
   explicit LGGOCXXNumberRef(int64_t N);
 public:
-  static LGGOCXXSharedReference create(const LGGOCXXSharedStoreContext& C, int64_t N);
-
   
-  LGGOCXXScalarEncodingType getType(void);
+  LGGOCXXScalarEncodingType getNumberType(void);
   int64_t signedValue (void);
   uint64_t unsignedValue (void);
   float floatValue(void);
@@ -60,6 +58,8 @@ public:
 
   virtual uint64_t getTagValue (void);
   virtual LGGOCXXSharedMemoryDescriptor getSerializedData (void);
+  
+  friend LGGOCXXSharedReference LGGOCXXStoreContext::createNumber(int64_t N);
 };
 
 #endif

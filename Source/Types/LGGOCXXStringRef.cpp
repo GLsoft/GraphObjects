@@ -26,10 +26,6 @@
 #include <stdint.h>
 
 #include "utf8.h"
-
-LGGOCXXSharedReference LGGOCXXStringRef::create(const LGGOCXXSharedStoreContext& C, std::string S) {
-  return LGGOCXXSharedReference (C, new LGGOCXXStringRef(S));
-}
    
 LGGOCXXStringRef::LGGOCXXStringRef(std::string S)
   : LGGOCXXReference(), charLength(0), lengthCalculated(false) {

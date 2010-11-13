@@ -27,9 +27,11 @@
 #import "LGGOMutableArray.h"
 
 @interface LGGOMutableArray () {
-  LGGOCXXSharedReference address;
+  LGGOCXXSharedReference reference;
   LGGOGraphContext *graphContext;
 }
+
+@property (nonatomic, readonly) LGGOCXXSharedReference reference;
 
 @end
 
@@ -40,16 +42,16 @@
   id retval;
   
   if (self) {
-    address = graphObject;
+    reference = graphObject;
     
-    id existingObject = (id)address->getNativeObject();
+    id existingObject = (id)reference->getNativeObject();
     
     if (existingObject) {
       [self release];
       retval = [existingObject retain];
     } else {
       graphContext = [context_ retain];
-      address->setNativeObject(self);
+      reference->setNativeObject(self);
     }
   }
   
@@ -60,17 +62,21 @@
   self = [super init];
   
   if (self) {
-    address = LGGOCXXHackArrayRef::create(context_.CXXContext);
+    {
+      //LLVM/Clang 2.8 compiler bug work around
+      LGGOCXXSharedStoreContext context = context_.CXXContext;
+      reference = context->createArray();
+    }
     graphContext = [context_ retain];
-    address->setNativeObject(self);
+    reference->setNativeObject(self);
   }
   
   return self;
 }
 
 - (void)dealloc {
-  if (address.isValid()) {
-    address->setNativeObject(NULL);
+  if (reference.isValid()) {
+    reference->setNativeObject(NULL);
   }
   [graphContext release];
     
@@ -78,11 +84,11 @@
 }
 
 - (NSUInteger)count {
-  return dynamic_cast<LGGOCXXHackArrayRef *>(*address)->getCount();
+  return dynamic_cast<LGGOCXXHackArrayRef *>(*reference)->getCount();
 }
 
 - (id)objectAtIndex:(NSUInteger)index {
-  LGGOCXXSharedReference typedObject = dynamic_cast<LGGOCXXHackArrayRef *>(*address)->getObjectAtIndex(index);
+  LGGOCXXSharedReference typedObject = dynamic_cast<LGGOCXXHackArrayRef *>(*reference)->getObjectAtIndex(index);
   id retval = (id)typedObject->getNativeObject();
   
   if (!retval) {
@@ -95,27 +101,27 @@
 - (void)addObject:(id)anObject {
   LGGOCXXSharedReference objectAddress = [graphContext transmuteToGraphObject:anObject];
   
-  dynamic_cast<LGGOCXXHackArrayRef *>(*address)->addObject(objectAddress);
+  dynamic_cast<LGGOCXXHackArrayRef *>(*reference)->addObject(objectAddress);
 }
 
 - (void)insertObject:(id)anObject atIndex:(NSUInteger)index {
   LGGOCXXSharedReference objectAddress = [graphContext transmuteToGraphObject:anObject];
   
-  dynamic_cast<LGGOCXXHackArrayRef *>(*address)->insertObjectAtIndex(objectAddress, index);
+  dynamic_cast<LGGOCXXHackArrayRef *>(*reference)->insertObjectAtIndex(objectAddress, index);
 }
 
 - (void)removeLastObject {
-  dynamic_cast<LGGOCXXHackArrayRef *>(*address)->removeLastObject();
+  dynamic_cast<LGGOCXXHackArrayRef *>(*reference)->removeLastObject();
 }
 
 - (void)removeObjectAtIndex:(NSUInteger)index {
-  dynamic_cast<LGGOCXXHackArrayRef *>(*address)->removeObjectAtIndex(index);
+  dynamic_cast<LGGOCXXHackArrayRef *>(*reference)->removeObjectAtIndex(index);
 }
 
 - (void)replaceObjectAtIndex:(NSUInteger)index withObject:(id)anObject {
   LGGOCXXSharedReference objectAddress = [graphContext transmuteToGraphObject:anObject];
 
-  dynamic_cast<LGGOCXXHackArrayRef *>(*address)->replaceObjectAtIndexWithObject(objectAddress, index);
+  dynamic_cast<LGGOCXXHackArrayRef *>(*reference)->replaceObjectAtIndexWithObject(objectAddress, index);
 }
 
 @end

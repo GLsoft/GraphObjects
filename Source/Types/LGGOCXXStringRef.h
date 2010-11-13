@@ -49,7 +49,6 @@ private:
   
   explicit LGGOCXXStringRef(std::string S);
 public:
-  static LGGOCXXSharedReference create(const LGGOCXXSharedStoreContext& C, std::string S);
   
   uint32_t getLength(void);
 //  void getCharsInRage(uint16_t *buffer, uint32_t start, uint32_t len);
@@ -57,6 +56,8 @@ public:
   
   virtual uint64_t getTagValue (void);
   virtual LGGOCXXSharedMemoryDescriptor getSerializedData (void);
+  
+  friend LGGOCXXSharedReference LGGOCXXStoreContext::createString(std::string S);
 };
 
 #endif

@@ -55,17 +55,24 @@ private:
   //FIXME this should be weak, but without native types that can bump shared_ptrs it needs to be strong for now
 public:
   explicit LGGOCXXStoreContext(const LGGOCXXSharedStore &S);
+  
   uint64_t getNextFreeAddress (void);
   void writeSegment (void);
   void commit (void);
    
+  LGGOCXXSharedReference createString(std::string S);
+  LGGOCXXSharedReference createNumber(int64_t N);
+  LGGOCXXSharedReference createArray(void);
+  LGGOCXXSharedReference createClass(std::string C);
+
+  
   LGGOCXXReference * rootObject(void);
   void setRootObject(LGGOCXXReference *T);
   
-  LGGOCXXSharedReference getAddress (uint64_t address);
+  LGGOCXXSharedReference getReferenceForAddress (uint64_t address);
   LGGOCXXSharedMemoryDescriptor getDescriptorForAddress (uint64_t address);
   
-  void setAddressForAddressValue(const LGGOCXXWeakReference& address, uint64_t addressValue);
+  void setReferenceForAddress(const LGGOCXXWeakReference& reference, uint64_t address);
   LGGOCXXSharedReference getAddressForAddressValue(uint64_t addressValue);
 };
 

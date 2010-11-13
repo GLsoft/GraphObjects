@@ -97,16 +97,16 @@
     retval->setNativeObject(object);
   } else if ([object isKindOfClass:[NSString class]]) {
     NSString *string = object;
-    retval = LGGOCXXStringRef::create(self.CXXContext, string.UTF8String);
+    retval = self.CXXContext->createString(string.UTF8String);
     retval->setNativeObject(object);
   } else if ([object isKindOfClass:[NSNumber class]]) {
     //FIXME this needs improvement for floats
     NSNumber *number = object;
-    retval = LGGOCXXNumberRef::create(self.CXXContext, number.longLongValue);
+    retval = self.CXXContext->createNumber(number.longLongValue);
     retval->setNativeObject(object);
   } else if ([object isKindOfClass:[NSArray class]]) {
     NSArray *array = object;
-    retval = LGGOCXXHackArrayRef::create(self.CXXContext);
+    retval = self.CXXContext->createArray();
     LGGOCXXHackArrayRef *lggoArray = dynamic_cast<LGGOCXXHackArrayRef *>(*retval);
     [array enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
       lggoArray->addObject([self transmuteToGraphObject:obj]);

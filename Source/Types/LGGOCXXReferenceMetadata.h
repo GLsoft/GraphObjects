@@ -38,7 +38,10 @@ typedef enum {
   kLGGOAddressStringType = 4,
   kLGGOAddressDateType = 5,
   kLGGOAddressArrayType = 6,
-  kLGGOAddressComplexType = 15
+  kLGGOAddressComplexType = 15,
+  kLGGOAddressMutableArray = (kLGGOAddressComplexType | 1<<4),
+  kLGGOAddressMutableSet = (kLGGOAddressComplexType | 2<<4),
+  kLGGOAddressMutableDictionary = (kLGGOAddressComplexType | 3<<4)
 } LGGOSimpleType;
 
 #include <stdint.h>
@@ -48,15 +51,16 @@ typedef enum {
 class LGGOCXXReferenceMetadata {
 private:
   uint64_t address;
-  LGGOCXXSharedStoreContext context;
-  LGGOCXXReference *type;
+  LGGOCXXWeakStoreContext context;
+  LGGOCXXReference *reference;
   uint32_t strongRefCount;
   uint32_t weakRefCount;
   bool dirty:1;
   bool dusty:1;
+  
 public:
-  explicit LGGOCXXReferenceMetadata(const LGGOCXXSharedStoreContext& C, LGGOCXXReference *T, uint64_t A);
-  explicit LGGOCXXReferenceMetadata(const LGGOCXXSharedStoreContext& C, LGGOCXXReference *T);
+  explicit LGGOCXXReferenceMetadata(const LGGOCXXSharedStoreContext& C, LGGOCXXReference *R, uint64_t A);
+  explicit LGGOCXXReferenceMetadata(const LGGOCXXSharedStoreContext& C, LGGOCXXReference *R);
   const uint64_t getAddressValue (void);
   
   const LGGOSimpleType getType (void) const;
@@ -71,14 +75,14 @@ public:
   void incrementWeakCount (void);
   void decrementWeakCount (void);
   
-  const LGGOCXXSharedStoreContext& getContext(void);
+  LGGOCXXSharedStoreContext getContext(void);
 
   bool operator== (const LGGOCXXReferenceMetadata& A);
   bool operator> (const LGGOCXXReferenceMetadata& b) const;
   bool operator< (const LGGOCXXReferenceMetadata& b) const;
   
-  LGGOCXXReference * getType (void);
-  void setType (LGGOCXXReference *T);
+  LGGOCXXReference * getReference (void);
+  void setReference (LGGOCXXReference *R);
   
   bool getDirty (void);
   void setDirty (bool D);
@@ -88,9 +92,10 @@ public:
   friend class LGGOCXXSharedReference;
   friend class LGGOCXXWeakReference;
 };
+
 class LGGOCXXSharedReference {
 private:
-  LGGOCXXReferenceMetadata *address;
+  LGGOCXXReferenceMetadata *metadata;
 public:
   explicit LGGOCXXSharedReference(const LGGOCXXWeakReference& A);
   LGGOCXXSharedReference(const LGGOCXXSharedReference& A);
@@ -105,12 +110,12 @@ public:
   void setDusty (bool D);
   
   
-  const LGGOCXXSharedStoreContext& getContext(void);
+  LGGOCXXSharedStoreContext getContext(void);
   uint64_t getAddressValue(void);
   
-  LGGOCXXReference * getType (void);
+  LGGOCXXReference * getReference (void);
   
-  void setType (LGGOCXXReference *T);
+  void setReference (LGGOCXXReference *T);
   bool isValid (void);
   
   LGGOCXXReference * operator* (void) const;
@@ -123,7 +128,7 @@ public:
 
 class LGGOCXXWeakReference {
 private:
-  LGGOCXXReferenceMetadata *address;
+  LGGOCXXReferenceMetadata *metadata;
 public:
   LGGOCXXWeakReference(void);
   explicit LGGOCXXWeakReference(const LGGOCXXSharedReference& A);
@@ -136,7 +141,7 @@ public:
   bool getDusty (void);
   void setDusty (bool D);
     
-  const LGGOCXXSharedStoreContext& getContext(void);
+  LGGOCXXSharedStoreContext getContext(void);
   uint64_t getAddressValue(void);
   bool isValid (void);
   

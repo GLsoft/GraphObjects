@@ -27,10 +27,6 @@
 #define LGGO_MAX_INT59 ((int64_t)0x03ffffffffffffff)
 #define LGGO_MIN_INT59 ((int64_t)(-1*LGGO_MAX_INT59))
 
-LGGOCXXSharedReference LGGOCXXNumberRef::create(const LGGOCXXSharedStoreContext& C, int64_t N) {
-  return LGGOCXXSharedReference (C, new LGGOCXXNumberRef(N));
-}
-
 LGGOCXXNumberRef::LGGOCXXNumberRef(int64_t N) : LGGOCXXReference(), rawValue(N) {
   rawValue = *((uint64_t *)&N);
   
@@ -66,7 +62,7 @@ LGGOCXXNumberRef::LGGOCXXNumberRef(int64_t N) : LGGOCXXReference(), rawValue(N) 
   }
 }
 
-LGGOCXXScalarEncodingType LGGOCXXNumberRef::getType(void) {
+LGGOCXXScalarEncodingType LGGOCXXNumberRef::getNumberType(void) {
   return type;
 }
 

@@ -22,10 +22,6 @@
 
 #include "LGGOCXXHackArrayRef.h"
 
-LGGOCXXSharedReference LGGOCXXHackArrayRef::create(const LGGOCXXSharedStoreContext& C) {
-  return LGGOCXXSharedReference(C, new LGGOCXXHackArrayRef());
-}
-
 uint64_t LGGOCXXHackArrayRef::getCount(void) {
   return objects.size();
 }

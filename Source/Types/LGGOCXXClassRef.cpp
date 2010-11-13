@@ -23,10 +23,6 @@
 
 #include "LGGOCXXClassRef.h"
 
-LGGOCXXSharedReference LGGOCXXClassRef::create(const LGGOCXXSharedStoreContext& C, std::string S) {
-  return LGGOCXXSharedReference (C, new LGGOCXXClassRef(S));
-}
-
 LGGOCXXClassRef::LGGOCXXClassRef(std::string N) : LGGOCXXReference(), name(N) {
 
 }

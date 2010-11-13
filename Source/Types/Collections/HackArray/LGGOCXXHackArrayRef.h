@@ -37,9 +37,7 @@ private:
   std::vector<LGGOCXXWeakReference> objects;  
   LGGOCXXHackArrayRef(void) : LGGOCXXReference() { }
   
-public:
-  static LGGOCXXSharedReference create (const LGGOCXXSharedStoreContext& C);
-  
+public:  
   uint64_t getCount(void);
   LGGOCXXSharedReference getObjectAtIndex(uint64_t i);
   
@@ -51,4 +49,6 @@ public:
   
   virtual uint64_t getTagValue (void);
   virtual LGGOCXXSharedMemoryDescriptor getSerializedData (void);
+
+  friend LGGOCXXSharedReference LGGOCXXStoreContext::createArray(void);
 };

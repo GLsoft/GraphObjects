@@ -108,7 +108,6 @@
       for (j = 0; j < i; j++) {
         LGGOString *testString = [[LGGOString alloc] initWithString:string inContext:context];
         NSRange range = NSMakeRange(j, i-j);
-//        NSRange range = NSMakeRange(0, length);
         
         unichar *stringBuffer = alloca(sizeof(unichar)*length);
         unichar *testStringBuffer = alloca(sizeof(unichar)*length);
@@ -120,10 +119,6 @@
                              testStringBuffer,
                              sizeof(unichar)*(i-j)),
                      nil);
-        
-  //      free(stringBuffer);
-    //    free(testStringBuffer);
-  //      
         [testString release];
       }
     }

@@ -55,8 +55,7 @@
 
 - (LGGOGraphContext *)newContext {
   LGGOCXXSharedStoreContext context = LGGOCXXSharedStoreContext(store->newContext());
-  LGGOGraphContext *retval =  [[LGGOGraphContext alloc] initWithCXXContext:context];
-  return retval;
+  return [[LGGOGraphContext alloc] initWithCXXContext:context];
 }
 
 @end

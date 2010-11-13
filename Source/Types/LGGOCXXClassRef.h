@@ -42,9 +42,7 @@ private:
   bool dirty:1;
   
   explicit LGGOCXXClassRef(std::string N);
-public:
-  static LGGOCXXSharedReference create(const LGGOCXXSharedStoreContext& C, std::string S);
-  
+public:  
   void addProperty(std::string name, LGGOCXXScalarEncodingType type);
   void addRelation(std::string name, LGGOCXXRelationEncodingType type, LGGOCXXRelationSemanticsType semantics);
   
@@ -57,6 +55,8 @@ public:
 
   virtual uint64_t getTagValue (void);
   virtual LGGOCXXSharedMemoryDescriptor getSerializedData (void);
+  
+  friend LGGOCXXSharedReference LGGOCXXStoreContext::createClass(std::string C);
 };
 
 #endif

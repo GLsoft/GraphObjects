@@ -28,11 +28,11 @@
 
 
 @interface LGGOString () {
-  LGGOCXXSharedReference address;
+  LGGOCXXSharedReference reference;
   LGGOGraphContext *graphContext;
 }
 
-@property LGGOCXXSharedReference address;
+@property (nonatomic, readonly) LGGOCXXSharedReference reference;
 
 @end
 
@@ -43,16 +43,16 @@
   id retval;
   
   if (self) {
-    address = graphObject;
+    reference = graphObject;
     
-    id existingObject = (id)address->getNativeObject();
+    id existingObject = (id)reference->getNativeObject();
     
     if (existingObject) {
       [self release];
       retval = [existingObject retain];
     } else {
       graphContext = [context_ retain];
-      address->setNativeObject(self);
+      reference->setNativeObject(self);
     }
   }
   
@@ -64,18 +64,22 @@
   id retval;
   
   if (self) {
-    address = LGGOCXXStringRef::create(context_.CXXContext, string_.UTF8String);
+    {
+      //LLVM/Clang 2.8 compiler bug work around
+      LGGOCXXSharedStoreContext context = context_.CXXContext;
+      reference = context->createString(string_.UTF8String);
+    }
     
-    id existingObject = (id)address->getNativeObject();
+    id existingObject = (id)reference->getNativeObject();
     
     if (existingObject) {
-      address = LGGOCXXSharedReference();
+      reference = LGGOCXXSharedReference();
       [self release];
       retval = [existingObject retain];
     } else {
       retval = self;
       graphContext = [context_ retain];
-      address->setNativeObject(self);
+      reference->setNativeObject(self);
     }
   }
 	
@@ -83,8 +87,8 @@
 }
 
 - (void) dealloc {
-  if (address.isValid()) {
-    address->setNativeObject(NULL);
+  if (reference.isValid()) {
+    reference->setNativeObject(NULL);
   }
   [graphContext release];
   
@@ -92,11 +96,11 @@
 }
 
 - (NSUInteger)length {  
-  return dynamic_cast<LGGOCXXStringRef *>(*address)->getLength();
+  return dynamic_cast<LGGOCXXStringRef *>(*reference)->getLength();
 }
 
 - (unichar)characterAtIndex:(NSUInteger)index {
-  return dynamic_cast<LGGOCXXStringRef *>(*address)->getCharacterAtIndex(index);
+  return dynamic_cast<LGGOCXXStringRef *>(*reference)->getCharacterAtIndex(index);
 }
 
 #if 0
